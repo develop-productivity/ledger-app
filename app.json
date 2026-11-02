@@ -1,15 +1,17 @@
 {
   "expo": {
-    "name": "ledger-app",
+    "name": "记账本",
     "slug": "ledger-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.developproductivity.ledger"
     },
     "android": {
+      "package": "com.developproductivity.ledger",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
