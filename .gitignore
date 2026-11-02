@@ -43,3 +43,4 @@ yarn-error.*
 # 签名和凭据
 *.keystore
 credentials.json
+credentials/

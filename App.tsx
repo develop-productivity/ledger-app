@@ -43,8 +43,10 @@ export default function App() {
 function Ledger() {
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [month, setMonth] = useState(() => toMonthKey(new Date()));
+  const [loadFailed, setLoadFailed] = useState(false);
 
-  useEffect(() => {
+  const load = () => {
+    setLoadFailed(false);
     loadEntries()
       .then(({ entries, recovered }) => {
         setEntries(entries);
@@ -52,10 +54,10 @@ function Ledger() {
           Alert.alert('数据无法读取', '原数据已备份，账本从空白开始。');
         }
       })
-      .catch(() => {
-        Alert.alert('读取失败', '请重启 App 再试。');
-      });
-  }, []);
+      .catch(() => setLoadFailed(true));
+  };
+
+  useEffect(load, []);
 
   // entries 为 null 时还没读完，不能保存，否则会用空列表覆盖已有数据
   useEffect(() => {
@@ -69,6 +71,17 @@ function Ledger() {
     () => groupByDate(monthEntries).map((g) => ({ title: g.date, data: g.items })),
     [monthEntries],
   );
+
+  if (loadFailed) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.empty}>读取失败</Text>
+        <Pressable style={[styles.button, styles.retry]} onPress={load}>
+          <Text style={styles.buttonText}>重试</Text>
+        </Pressable>
+      </View>
+    );
+  }
 
   if (entries === null) {
     return <ActivityIndicator style={{ flex: 1 }} />;
@@ -246,4 +259,6 @@ const styles = StyleSheet.create({
   note: { fontSize: 12, color: COLORS.muted, marginTop: 2 },
   amount: { fontSize: 16, fontWeight: '600' },
   empty: { textAlign: 'center', color: COLORS.muted, marginTop: 40 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  retry: { marginTop: 16, paddingVertical: 10 },
 });

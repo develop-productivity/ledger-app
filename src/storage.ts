@@ -2,16 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { deserialize, serialize, type Entry } from './ledger';
 
 export const STORAGE_KEY = 'ledger.v1';
-export const CORRUPT_KEY = 'ledger.v1.corrupt';
+export const CORRUPT_KEY_PREFIX = 'ledger.v1.corrupt.';
 
 export type LoadResult = { entries: Entry[]; recovered: boolean };
 
-export async function loadEntries(): Promise<LoadResult> {
+export async function loadEntries(now = Date.now()): Promise<LoadResult> {
   const raw = await AsyncStorage.getItem(STORAGE_KEY);
   const data = deserialize(raw);
   if (data) return { entries: data.entries, recovered: false };
-  // 备份后清掉原键，否则下次启动会再次覆盖这份备份
-  await AsyncStorage.setItem(CORRUPT_KEY, raw ?? '');
+  // 每次损坏单独备份，不覆盖以前的；备份后清掉原键，下次启动才不会重复备份
+  await AsyncStorage.setItem(CORRUPT_KEY_PREFIX + now, raw ?? '');
   await AsyncStorage.removeItem(STORAGE_KEY);
   return { entries: [], recovered: true };
 }
