@@ -39,3 +39,7 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# 签名和凭据
+*.keystore
+credentials.json
