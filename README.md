@@ -4,6 +4,12 @@
 
 功能：记收入 / 支出、按月查看收支和结余、长按删除。
 
+## 下载安装（Android）
+
+到 [Releases](https://github.com/develop-productivity/ledger-app/releases/latest) 下载最新的 `.apk`，在手机上打开安装。系统提示"未知来源"时，按提示允许浏览器安装。
+
+更新内容见 [CHANGELOG.md](CHANGELOG.md)。
+
 ## 快速开始
 
 ```bash
@@ -15,6 +21,7 @@ npm run start:tunnel # 在 WSL 里跑时用
 
 - 真机调试：[docs/guides/真机调试.md](docs/guides/真机调试.md)
 - 打包并装到手机：[docs/guides/打包安装.md](docs/guides/打包安装.md)
+- 发布 Release：[docs/guides/发布Release.md](docs/guides/发布Release.md)
 
 ## 代码结构
 
