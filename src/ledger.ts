@@ -16,8 +16,8 @@ export interface LedgerData {
 }
 
 export const CATEGORIES: Record<EntryType, string[]> = {
-  expense: ['餐饮', '交通', '购物', '居住', '娱乐', '其他'],
-  income: ['工资', '副业', '其他'],
+  expense: ['餐饮', '交通', '购物', '居住', '娱乐', '医疗', '学习', '人情', '通讯', '其他'],
+  income: ['工资', '副业', '理财', '红包', '其他'],
 };
 
 const MAX_CENTS = 100_000_000_00;
@@ -52,6 +52,57 @@ export function toMonthKey(d: Date): string {
 export function shiftMonth(monthKey: string, delta: number): string {
   const [y, m] = monthKey.split('-').map(Number);
   return toMonthKey(new Date(y, m - 1 + delta, 1));
+}
+
+function parseDate(date: string): Date {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+export function addDays(date: string, delta: number): string {
+  const d = parseDate(date);
+  d.setDate(d.getDate() + delta);
+  return toDateString(d);
+}
+
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+export function dateLabel(date: string, today: string): string {
+  if (date === today) return '今天';
+  if (date === addDays(today, -1)) return '昨天';
+  const d = parseDate(date);
+  const md = `${d.getMonth() + 1}月${d.getDate()}日`;
+  const prefix = date.slice(0, 4) === today.slice(0, 4) ? '' : `${d.getFullYear()}年`;
+  return `${prefix}${md} ${WEEKDAYS[d.getDay()]}`;
+}
+
+export function monthLabel(monthKey: string): string {
+  const [y, m] = monthKey.split('-').map(Number);
+  return `${y}年${m}月`;
+}
+
+export function daysInMonth(monthKey: string): number {
+  const [y, m] = monthKey.split('-').map(Number);
+  return new Date(y, m, 0).getDate();
+}
+
+export function centsToInput(cents: number): string {
+  const yuan = Math.floor(cents / 100);
+  const frac = cents % 100;
+  if (frac === 0) return String(yuan);
+  return `${yuan}.${String(frac).padStart(2, '0').replace(/0$/, '')}`;
+}
+
+export function upsertEntry(entries: Entry[], entry: Entry): Entry[] {
+  const i = entries.findIndex((e) => e.id === entry.id);
+  if (i === -1) return [...entries, entry];
+  const next = entries.slice();
+  next[i] = entry;
+  return next;
+}
+
+export function removeEntry(entries: Entry[], id: string): Entry[] {
+  return entries.filter((e) => e.id !== id);
 }
 
 export function entriesOfMonth(entries: Entry[], monthKey: string): Entry[] {
