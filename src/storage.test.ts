@@ -27,6 +27,18 @@ test('保存后能读回', async () => {
   expect((await loadEntries()).entries).toEqual([entry]);
 });
 
+test('v1.0.0 写下的数据，升级后原样读出', async () => {
+  const v100 =
+    '{"version":1,"entries":[' +
+    '{"id":"mhkx1-ab12cd","type":"expense","amountCents":2350,"category":"餐饮","note":"午饭","date":"2026-11-02","createdAt":1793600000000},' +
+    '{"id":"mhkx2-ef34gh","type":"income","amountCents":1200000,"category":"工资","note":"","date":"2026-11-01","createdAt":1793500000000}' +
+    ']}';
+  await AsyncStorage.setItem(STORAGE_KEY, v100);
+  const { entries, recovered } = await loadEntries();
+  expect(recovered).toBe(false);
+  expect(entries).toEqual(JSON.parse(v100).entries);
+});
+
 test('连续保存时最后一次生效', async () => {
   saveEntries([entry]);
   saveEntries([]);

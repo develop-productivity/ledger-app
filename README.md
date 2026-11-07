@@ -17,7 +17,7 @@ npm install
 npm run check        # 类型检查 + 单元测试
 npx expo start       # 和手机同一 Wi-Fi 时用
 npm run start:tunnel # 在 WSL 里跑时用
-npx expo start --web # 在浏览器里预览界面
+npx expo start --web # 在浏览器里预览界面（删除确认框在浏览器里不显示，删除功能要在手机上试）
 ```
 
 - 真机调试：[docs/guides/真机调试.md](docs/guides/真机调试.md)

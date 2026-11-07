@@ -33,10 +33,14 @@ import { colors, numberFont, radius } from '../theme';
 
 export default function EntryScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const lastFound = useRef<Entry | undefined>(undefined);
   return (
     <LoadGate>
       {(entries) => {
-        const existing = id ? entries.find((e) => e.id === id) : undefined;
+        const found = id ? entries.find((e) => e.id === id) : undefined;
+        if (found) lastFound.current = found;
+        // 刚删除时弹窗还在关闭动画里，继续显示原表单，不闪"不存在"
+        const existing = found ?? lastFound.current;
         if (id && !existing) {
           return (
             <View style={{ flex: 1 }}>
@@ -86,6 +90,8 @@ function EntryForm({ existing }: { existing?: Entry }) {
   const [date, setDate] = useState(existing?.date ?? today);
   const [note, setNote] = useState(existing?.note ?? '');
   const amountRef = useRef<ComponentRef<typeof TextInput>>(null);
+  // 关闭动画期间再点"保存"会再存一条，并多退一页
+  const done = useRef(false);
 
   // 等弹窗动画结束再聚焦：动画中途聚焦，安卓上键盘可能弹不出来，Web 上页面会错位
   useEffect(() => {
@@ -100,11 +106,13 @@ function EntryForm({ existing }: { existing?: Entry }) {
   };
 
   const submit = () => {
+    if (done.current) return;
     const amountCents = parseAmount(amountText);
     if (amountCents === null) {
       Alert.alert('金额不对', '请输入大于 0 的数字，最多两位小数。');
       return;
     }
+    done.current = true;
     const now = Date.now();
     save({
       id: existing?.id ?? newId(now),
@@ -126,6 +134,8 @@ function EntryForm({ existing }: { existing?: Entry }) {
         text: '删除',
         style: 'destructive',
         onPress: () => {
+          if (done.current) return;
+          done.current = true;
           remove(existing.id);
           router.back();
         },
