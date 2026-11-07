@@ -22,6 +22,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "904df154-cf62-4d80-8da5-1e905a9310f2"
+      }
+    },
+    "owner": "develop-productivity"
   }
 }
