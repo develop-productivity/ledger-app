@@ -34,9 +34,12 @@
 
 | 现象 | 处理 |
 |---|---|
-| `verify` 报版本不一致 | tag 已经推上去，而且受保护，不能移动。改好版本号，提 PR，发下一个补丁版本（如 `v1.2.1`） |
+| `verify` 报版本不一致或 versionCode 不一致 | tag 已经推上去，而且受保护，不能移动或删除。改好版本号，提 PR，发下一个补丁版本（如 `v1.2.1`） |
 | `release` 报没有 `EXPO_TOKEN` | 按上面"第一次"配置，然后在 Actions 页面点 Re-run failed jobs |
 | EAS 构建失败或额度用完 | 看 EAS 构建页的日志；额度用完时，改用下面的"手动发版" |
+| APK 已经打好，后面的下载或建 Release 失败了 | **不要直接重跑**：重跑会再打一次包，多用一次免费额度。到 <https://expo.dev> 的项目 Builds 页面找到这次构建，下载 APK，再从下面"手动发版"的第 3 步接着做 |
+| 工作流 60 分钟超时，但 EAS 还在排队或构建 | EAS 那边会继续跑完。同上，到 Builds 页面拿 APK，从"手动发版"第 3 步接着做 |
+| 重跑时报 Release 已存在 | 先删掉这个 Release（只删 Release，不删 tag）：`gh release delete v1.2.0 --repo develop-productivity/ledger-app`，再重跑 |
 
 ## 备用：在 Mac 上手动发版
 

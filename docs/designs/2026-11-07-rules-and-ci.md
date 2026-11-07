@@ -39,10 +39,10 @@
 
 | job | 做什么 | 失败时 |
 |---|---|---|
-| `verify` | tag 必须等于 `v` + `app.json` 的 `version`；CHANGELOG 必须有 `## v<版本>` 一节；tag 指向的提交必须在 main 上；跑 `npm run check` | 不打包，不发 Release |
+| `verify` | tag 必须等于 `v` + `app.json` 的 `version`；CHANGELOG 必须有 `## v<版本>` 一节，标题里的 versionCode 等于 `app.json` 的值；tag 指向的提交必须在 main 上；跑 `npm run check` | 不打包，不发 Release |
 | `release` | 用 EAS 云端打 APK（`--wait` 等待完成）→ 下载 → 算 SHA-256 → 从 CHANGELOG 取说明 → `gh release create` | Release 不会建出来，可以修好后重跑 |
 
-`release` 需要仓库密钥 `EXPO_TOKEN`（Expo 网站生成的访问令牌）。没有配置时，`release` 直接报错并说明要配置什么。
+`release` 需要仓库密钥 `EXPO_TOKEN`（Expo 网站生成的访问令牌）。没有配置时，`release` 直接报错并说明要配置什么。令牌只在"检查"和"EAS 打包"两步里可见，`npm ci` 等步骤读不到，减少依赖包脚本偷取令牌的风险。eas-cli 锁定版本（27.5.0），避免新版改了 `--json` 输出格式导致下载步骤失败。
 
 ### 方案对比
 
@@ -72,4 +72,7 @@
 
 1. 本 PR 的 CI `check` 通过。
 2. 用 `gh api` 读回规则集，确认作用对象和规则。
-3. 下次发版（v1.1.0）走一遍 tag 触发的流程。
+3. 下次发版（v1.1.0）第一次真正跑发版工作流，人工检查：
+   - Release 正文是不是 CHANGELOG 里 v1.1.0 那一节；
+   - APK 和 `.sha256` 两个文件都在；
+   - 在装了 v1.0.0 的手机上覆盖安装，原来的记录都还在。

@@ -33,8 +33,14 @@ jobs:
             echo "::error::tag 是 $TAG，但 app.json 的 version 是 $VERSION"
             exit 1
           fi
-          if ! grep -qE "^## v${VERSION}([（ ]|$)" CHANGELOG.md; then
+          HEADING=$(grep -E "^## v${VERSION}([（ ]|$)" CHANGELOG.md || true)
+          if [ -z "$HEADING" ]; then
             echo "::error::CHANGELOG.md 里没有 \"## v$VERSION\" 这一节"
+            exit 1
+          fi
+          CODE=$(node -p "require('./app.json').expo.android.versionCode")
+          if ! echo "$HEADING" | grep -qE "versionCode ${CODE}([^0-9]|$)"; then
+            echo "::error::app.json 的 versionCode 是 $CODE，和 CHANGELOG 标题「$HEADING」不一致。是不是忘了加 1？"
             exit 1
           fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
@@ -52,12 +58,13 @@ jobs:
     timeout-minutes: 60
     permissions:
       contents: write
+    # EXPO_TOKEN 只给需要它的步骤，npm ci 等步骤里的第三方脚本读不到
     env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      GH_TOKEN: ${{ github.token }}
       TAG: ${{ github.ref_name }}
     steps:
       - name: 检查 EXPO_TOKEN
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           if [ -z "$EXPO_TOKEN" ]; then
             echo "::error::没有配置仓库密钥 EXPO_TOKEN。做法见 docs/guides/发布Release.md"
@@ -70,7 +77,9 @@ jobs:
           cache: npm
       - run: npm ci
       - name: EAS 云端打 APK
-        run: npx eas-cli@latest build -p android --profile preview --non-interactive --wait --json > build.json
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli@27.5.0 build -p android --profile preview --non-interactive --wait --json > build.json
       - name: 下载 APK，算 SHA-256
         run: |
           set -eu
@@ -99,6 +108,8 @@ jobs:
           } > notes.md
           cat notes.md
       - name: 创建 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$TAG" "ledger-$TAG.apk" "ledger-$TAG.apk.sha256" \
             --verify-tag --title "记账本 $TAG" --notes-file notes.md
