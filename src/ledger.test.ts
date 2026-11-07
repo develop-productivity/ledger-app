@@ -1,4 +1,11 @@
 import {
+  addDays,
+  centsToInput,
+  dateLabel,
+  daysInMonth,
+  monthLabel,
+  removeEntry,
+  upsertEntry,
   deserialize,
   entriesOfMonth,
   formatCents,
@@ -85,6 +92,50 @@ test('groupByDate 相邻同日合并', () => {
     ['2026-11-02', 2],
     ['2026-11-01', 1],
   ]);
+});
+
+test('addDays 跨月、跨年', () => {
+  expect(addDays('2026-11-01', -1)).toBe('2026-10-31');
+  expect(addDays('2026-12-31', 1)).toBe('2027-01-01');
+  expect(addDays('2028-02-28', 1)).toBe('2028-02-29');
+});
+
+test('dateLabel 今天、昨天、同年、跨年', () => {
+  const today = '2026-11-07';
+  expect(dateLabel('2026-11-07', today)).toBe('今天');
+  expect(dateLabel('2026-11-06', today)).toBe('昨天');
+  expect(dateLabel('2026-11-05', today)).toBe('11月5日 周四');
+  expect(dateLabel('2025-12-31', today)).toBe('2025年12月31日 周三');
+});
+
+test('monthLabel 和 daysInMonth', () => {
+  expect(monthLabel('2026-03')).toBe('2026年3月');
+  expect(daysInMonth('2026-02')).toBe(28);
+  expect(daysInMonth('2026-12')).toBe(31);
+});
+
+test.each([
+  [2350, '23.5'],
+  [2305, '23.05'],
+  [2300, '23'],
+  [1, '0.01'],
+])('centsToInput(%d) = %s，且能被 parseAmount 原样解析', (cents, text) => {
+  expect(centsToInput(cents)).toBe(text);
+  expect(parseAmount(text)).toBe(cents);
+});
+
+test('upsertEntry 新增或按 id 替换，不改原数组', () => {
+  const a = e({ id: 'a', amountCents: 1 });
+  const list = [a];
+  expect(upsertEntry(list, e({ id: 'b' })).map((x) => x.id)).toEqual(['a', 'b']);
+  const replaced = upsertEntry(list, { ...a, amountCents: 2 });
+  expect(replaced).toHaveLength(1);
+  expect(replaced[0].amountCents).toBe(2);
+  expect(list[0].amountCents).toBe(1);
+});
+
+test('removeEntry 按 id 删除', () => {
+  expect(removeEntry([e({ id: 'a' }), e({ id: 'b' })], 'a').map((x) => x.id)).toEqual(['b']);
 });
 
 describe('deserialize', () => {
