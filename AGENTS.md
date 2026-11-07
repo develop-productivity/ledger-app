@@ -9,7 +9,8 @@
 - 业务逻辑放 `src/ledger.ts`，写成纯函数并配单测；`App.tsx` 只管界面和状态。
 - 金额一律用整数分（`amountCents`）。存储格式改动必须升 `version` 并写迁移。
 - 不提交密钥、签名文件（`*.jks`、`*.keystore`、`*.p12`、`credentials.json`）和生成的 `ios/`、`android/` 目录。
-- 改动走分支和 PR，不直接推 `main`。合并由用户做。
+- 改动走分支和 PR，不直接推 `main`（规则集强制）。PR 的 CI `check` 通过才能合并。合并由用户做。
+- 发版：改 `app.json` 版本号和 `CHANGELOG.md`，合并后推 `v*` tag，CI 自动打包并建 Release。见 [docs/guides/发布Release.md](docs/guides/发布Release.md)。`v*` tag 不能移动或删除，发错了就发下一个补丁版本。
 - 需要 Mac 才能做的事（iOS 构建、Xcode），写进 `docs/guides/`，让 Mac 上的 session 只读仓库就能接上。
 - 决定、设计、审查、复盘记在 `docs/` 对应目录，文件名 `YYYY-MM-DD-主题.md`，并更新该目录的 `README.md`。
 
