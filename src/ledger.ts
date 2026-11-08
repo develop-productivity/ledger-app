@@ -135,7 +135,7 @@ export function newId(now: number): string {
   return `${now.toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function isEntry(x: unknown): x is Entry {
+export function isEntry(x: unknown): x is Entry {
   if (typeof x !== 'object' || x === null) return false;
   const e = x as Record<string, unknown>;
   return (

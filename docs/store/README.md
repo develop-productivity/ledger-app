@@ -43,12 +43,16 @@ English (80 characters max):
 · 环形饼图和分类排行，自动算出占比
 · 每日柱状图，看出哪天花得多
 
+【备份和导出】
+· 一键备份到文件，存到网盘或发给自己，换手机也能恢复
+· 导出 CSV 表格，用 Excel、WPS 打开
+
 【数据只在你手机上】
 · 不联网、不注册、不收集任何信息
 · 没有广告，没有第三方统计
 · 源代码公开：github.com/develop-productivity/ledger-app
 
-注意：数据只存在本机，卸载 App 会删除全部记录。
+注意：数据只存在本机，卸载 App 会删除全部记录。卸载或换手机前，请先在「我的」里备份。
 ```
 
 English:
@@ -66,12 +70,16 @@ SEE WHERE YOUR MONEY GOES
 - Donut chart and category ranking with percentages
 - Daily bar chart for your spending rhythm
 
+BACKUP AND EXPORT
+- Back up all records to a file and restore them on a new phone
+- Export a CSV spreadsheet for Excel
+
 YOUR DATA STAYS ON YOUR PHONE
 - Works offline. No account. No data collection.
 - No ads. No analytics.
 - Open source: github.com/develop-productivity/ledger-app
 
-Note: the app interface is in Chinese. Data is stored only on your device; uninstalling the app deletes all records.
+Note: the app interface is in Chinese. Data is stored only on your device; uninstalling the app deletes all records, so back up first.
 ```
 
 ## 图片
@@ -91,5 +99,6 @@ Note: the app interface is in Chinese. Data is stored only on your device; unins
 | 是否收集或分享用户数据 | 否 |
 | 是否加密传输 | 不适用（不传输数据） |
 | 用户能否要求删除数据 | 数据只在本机，卸载即删除 |
+| 备份和导出 | 用户主动点击才生成文件，交给用户选的 App，开发者收不到，不算"收集" |
 | 是否含广告 | 否 |
 | 是否需要登录 | 否 |

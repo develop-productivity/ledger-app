@@ -45,7 +45,8 @@
           "imageWidth": 200,
           "backgroundColor": "#4C6EF5"
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "scheme": "ledger"
   }
