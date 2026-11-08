@@ -55,6 +55,20 @@ describe('坏文件整份拒绝', () => {
     expect(parseBackup(text)).toEqual({ ok: false, reason: 'bad-format' });
   });
 
+  test.each(['2026-99-99', '2026-02-30', '2026-13-01', '2026-00-10'])('日期 %s 不存在，整份拒绝', (date) => {
+    const text = JSON.stringify({ version: 1, entries: [e('a'), e('b', { date })] });
+    expect(parseBackup(text)).toEqual({ ok: false, reason: 'bad-format' });
+  });
+
+  test('闰年 2 月 29 日可以导入', () => {
+    expect(parseBackup(JSON.stringify({ version: 1, entries: [e('a', { date: '2028-02-29' })] })).ok).toBe(true);
+  });
+
+  test('多出来的字段不导入', () => {
+    const text = JSON.stringify({ version: 1, entries: [{ ...e('a'), evil: '<script>', extra: 1 }] });
+    expect(parseBackup(text)).toEqual({ ok: true, entries: [e('a')] });
+  });
+
   test('有一条日期格式不对，整份拒绝', () => {
     const text = JSON.stringify({ version: 1, entries: [e('a', { date: '2026/11/08' })] });
     expect(parseBackup(text)).toEqual({ ok: false, reason: 'bad-format' });

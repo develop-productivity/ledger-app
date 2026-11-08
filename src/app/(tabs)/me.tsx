@@ -1,12 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Constants from 'expo-constants';
 import { useState, type ComponentProps } from 'react';
-import { ActivityIndicator, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { backupFileName, csvFileName, mergeEntries, parseBackup, toBackupJson, toCsv } from '../../backup';
 import { LoadGate } from '../../components/LoadGate';
-import { confirm, notify } from '../../dialog';
-import { pickTextFile, shareTextFile, type ShareOutcome } from '../../exporter';
+import { choose, confirm, notify } from '../../dialog';
+import { pickTextFile, saveTextFileToFolder, shareTextFile, type ExportOutcome } from '../../exporter';
 import { useLedger } from '../../LedgerContext';
 import type { Entry } from '../../ledger';
 import { colors, radius, shadow } from '../../theme';
@@ -43,8 +43,9 @@ function Me({ entries }: { entries: Entry[] }) {
     }
   }
 
-  function afterShare(outcome: ShareOutcome) {
+  function afterExport(outcome: ExportOutcome, name: string) {
     if (outcome === 'unavailable') notify('无法分享', '这台设备不支持系统分享。');
+    if (outcome === 'saved') notify('已保存', `文件 ${name} 已存到你选的文件夹。`);
   }
 
   function exportFile(kind: 'backup' | 'csv') {
@@ -53,12 +54,23 @@ function Me({ entries }: { entries: Entry[] }) {
       return;
     }
     const now = new Date();
+    const [name, text, mime] =
+      kind === 'backup'
+        ? [backupFileName(now), toBackupJson(entries, now), 'application/json']
+        : [csvFileName(now), toCsv(entries), 'text/csv'];
     run(kind, async () => {
+      // Android 的分享面板不一定有"存到本机"，所以多给一个"存到手机文件夹"
+      const target =
+        Platform.OS === 'android'
+          ? await choose(kind === 'backup' ? '备份到哪里' : '导出到哪里', '', [
+              { key: 'folder', text: '存到手机文件夹' },
+              { key: 'share', text: '分享给其他 App' },
+            ])
+          : 'share';
+      if (target === null) return;
       const outcome =
-        kind === 'backup'
-          ? await shareTextFile(backupFileName(now), toBackupJson(entries, now), 'application/json')
-          : await shareTextFile(csvFileName(now), toCsv(entries), 'text/csv');
-      afterShare(outcome);
+        target === 'folder' ? await saveTextFileToFolder(name, text, mime) : await shareTextFile(name, text, mime);
+      afterExport(outcome, name);
     });
   }
 
@@ -104,7 +116,7 @@ function Me({ entries }: { entries: Entry[] }) {
         <Row
           icon="cloud-upload-outline"
           title="备份到文件"
-          desc="存到网盘、「文件」，或发给自己"
+          desc="存到手机、网盘，或发给自己"
           busy={busy === 'backup'}
           onPress={() => exportFile('backup')}
         />

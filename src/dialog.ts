@@ -15,3 +15,22 @@ export function confirm(title: string, message: string, okText: string): Promise
     ], { cancelable: true, onDismiss: () => resolve(false) }),
   );
 }
+
+/** 让用户在几个选项里选一个，取消时返回 null。只在手机上用（网页预览不需要选）。 */
+export function choose<K extends string>(
+  title: string,
+  message: string,
+  options: { key: K; text: string }[],
+): Promise<K | null> {
+  return new Promise((resolve) =>
+    Alert.alert(
+      title,
+      message,
+      [
+        ...options.map((o) => ({ text: o.text, onPress: () => resolve(o.key) })),
+        { text: '取消', style: 'cancel' as const, onPress: () => resolve(null) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(null) },
+    ),
+  );
+}

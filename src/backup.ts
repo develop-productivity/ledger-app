@@ -34,7 +34,20 @@ export function parseBackup(text: string): ParseResult {
   if (d.version !== BACKUP_VERSION || !Array.isArray(d.entries) || !d.entries.every(isEntry)) {
     return { ok: false, reason: 'bad-format' };
   }
-  return { ok: true, entries: d.entries };
+  if (!d.entries.every((e: Entry) => isRealDate(e.date))) return { ok: false, reason: 'bad-format' };
+  // 只取已知字段：手工改过的文件里多出来的字段不存进本机
+  return { ok: true, entries: d.entries.map(pickFields) };
+}
+
+function isRealDate(date: string): boolean {
+  const [y, m, d] = date.split('-').map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d));
+  return t.getUTCFullYear() === y && t.getUTCMonth() === m - 1 && t.getUTCDate() === d;
+}
+
+function pickFields(e: Entry): Entry {
+  const { id, type, amountCents, category, note, date, createdAt } = e;
+  return { id, type, amountCents, category, note, date, createdAt };
 }
 
 function sameEntry(a: Entry, b: Entry): boolean {
