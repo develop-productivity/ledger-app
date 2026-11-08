@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors, radius } from '../theme';
+import { colors, radius } from '@/ui/theme';
 
 export function Segmented<T extends string>({
   options,

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { deserialize, serialize, type Entry } from './ledger';
+import { deserialize, serialize, type Entry } from '@/core/ledger';
 
 export const STORAGE_KEY = 'ledger.v1';
 export const CORRUPT_KEY_PREFIX = 'ledger.v1.corrupt.';

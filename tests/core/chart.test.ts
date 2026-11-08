@@ -1,5 +1,5 @@
-import { breakdown, dailyTotals, donutSegments } from './chart';
-import type { Entry } from './ledger';
+import { breakdown, dailyTotals, donutSegments } from '@/core/chart';
+import type { Entry } from '@/core/ledger';
 
 const e = (over: Partial<Entry>): Entry => ({
   id: Math.random().toString(36),

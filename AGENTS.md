@@ -6,7 +6,8 @@
 
 - 开工前读：[README.md](README.md)、[docs/decisions/README.md](docs/decisions/README.md)、相关的 [docs/designs/](docs/designs/)。
 - 提交前跑 `npm run check`（类型检查 + 单元测试），通过后再提交。
-- 业务逻辑放 `src/ledger.ts`，写成纯函数并配单测；`App.tsx` 只管界面和状态。
+- 代码按目录分职责（见 [README.md](README.md) 的"代码结构"）：业务逻辑写成纯函数放 `src/core/`，配单测；和系统、存储打交道的放 `src/services/`；页面 `src/app/` 只管界面。
+- 测试放根目录 `tests/`，子目录和 `src/` 对应（`src/core/ledger.ts` → `tests/core/ledger.test.ts`）。import 用 `@/` 别名（`@/core/ledger`），不写 `../../`。
 - 金额一律用整数分（`amountCents`）。存储格式改动必须升 `version` 并写迁移。
 - 不提交密钥、签名文件（`*.jks`、`*.keystore`、`*.p12`、`credentials.json`）和生成的 `ios/`、`android/` 目录。
 - 改动走分支和 PR，不直接推 `main`（规则集强制）。PR 的 CI `check` 通过才能合并。合并由用户做。

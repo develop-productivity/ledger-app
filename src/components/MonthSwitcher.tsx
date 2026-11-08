@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { monthLabel, shiftMonth, toMonthKey } from '../ledger';
-import { colors } from '../theme';
+import { monthLabel, shiftMonth, toMonthKey } from '@/core/ledger';
+import { colors } from '@/ui/theme';
 
 export function MonthSwitcher({
   month,

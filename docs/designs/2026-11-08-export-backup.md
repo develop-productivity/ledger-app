@@ -57,9 +57,9 @@
 
 ### 代码结构
 
-- `src/backup.ts`：纯函数 `toBackupJson`、`parseBackup`、`mergeEntries`、`toCsv`、`backupFileName`，配单测。
-- `src/exporter.ts`：文件读写、分享、选文件夹、选文件。网页预览里不能分享本地文件，改成浏览器下载。
-- `src/dialog.ts`：弹窗。网页预览里 `Alert` 不显示，改用浏览器弹窗，方便在预览里测完整流程。
+- `src/core/backup.ts`：纯函数 `toBackupJson`、`parseBackup`、`mergeEntries`、`toCsv`、`backupFileName`，配单测。
+- `src/services/exporter.ts`：文件读写、分享、选文件夹、选文件。网页预览里不能分享本地文件，改成浏览器下载。
+- `src/services/dialog.ts`：弹窗。网页预览里 `Alert` 不显示，改用浏览器弹窗，方便在预览里测完整流程。
 - `src/app/(tabs)/me.tsx`：「我的」页面。
 - `LedgerContext` 加 `mergeIn(incoming)`：在 `setEntries` 里用最新的列表重新合并，只新增，照常走串行保存。
 

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useLedger } from '../LedgerContext';
-import type { Entry } from '../ledger';
-import { colors, radius } from '../theme';
+import { useLedger } from '@/state/LedgerContext';
+import type { Entry } from '@/core/ledger';
+import { colors, radius } from '@/ui/theme';
 
 export function LoadGate({ children }: { children: (entries: Entry[]) => ReactNode }) {
   const { entries, loadFailed, reload } = useLedger();

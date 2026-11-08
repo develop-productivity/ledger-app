@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Alert } from 'react-native';
-import { mergeEntries } from './backup';
-import { removeEntry, toMonthKey, upsertEntry, type Entry } from './ledger';
-import { loadEntries, saveEntries } from './storage';
+import { mergeEntries } from '@/core/backup';
+import { removeEntry, toMonthKey, upsertEntry, type Entry } from '@/core/ledger';
+import { loadEntries, saveEntries } from '@/services/storage';
 
 interface LedgerState {
   entries: Entry[] | null;

@@ -1,5 +1,5 @@
-import { backupFileName, csvFileName, mergeEntries, parseBackup, toBackupJson, toCsv } from './backup';
-import { serialize, type Entry } from './ledger';
+import { backupFileName, csvFileName, mergeEntries, parseBackup, toBackupJson, toCsv } from '@/core/backup';
+import { serialize, type Entry } from '@/core/ledger';
 
 const e = (id: string, over: Partial<Entry> = {}): Entry => ({
   id,

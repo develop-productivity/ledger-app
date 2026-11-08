@@ -3,10 +3,10 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Alert, Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CategoryIcon } from '../../components/CategoryIcon';
-import { LoadGate } from '../../components/LoadGate';
-import { MonthSwitcher } from '../../components/MonthSwitcher';
-import { useLedger } from '../../LedgerContext';
+import { CategoryIcon } from '@/components/CategoryIcon';
+import { LoadGate } from '@/components/LoadGate';
+import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { useLedger } from '@/state/LedgerContext';
 import {
   dateLabel,
   entriesOfMonth,
@@ -15,8 +15,8 @@ import {
   summarize,
   toDateString,
   type Entry,
-} from '../../ledger';
-import { colors, numberFont, radius, shadow } from '../../theme';
+} from '@/core/ledger';
+import { colors, numberFont, radius, shadow } from '@/ui/theme';
 
 export default function DetailScreen() {
   return <LoadGate>{(entries) => <Detail entries={entries} />}</LoadGate>;

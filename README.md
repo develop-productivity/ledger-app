@@ -28,18 +28,35 @@ npx expo start --web # 在浏览器里预览界面（删除确认框在浏览器
 
 ## 代码结构
 
+```text
+src/
+  app/          页面（Expo Router：一个文件一个页面，位置是框架规定的）
+    (tabs)/       底部标签页：index 明细、stats 统计、me 我的
+    entry.tsx     记一笔和编辑
+  components/   可复用的界面组件：分类图标、月份切换、环形图……
+  core/         纯函数业务逻辑，不碰 React、不碰存储，都有单测
+  services/     和系统、存储打交道：AsyncStorage、写文件、分享、弹窗
+  state/        全局状态（React Context）
+  ui/           配色、分类的图标和颜色
+tests/          单元测试，子目录和 src/ 一一对应
+assets/         图标和启动图；source/ 里是 SVG 源文件
+docs/           决定、设计、审查、指南、商店素材
+```
+
 | 文件 | 作用 |
 |---|---|
-| [src/app/](src/app/) | 页面（Expo Router，一个文件一个页面）：`(tabs)/index.tsx` 明细、`(tabs)/stats.tsx` 统计、`(tabs)/me.tsx` 我的（备份、恢复、导出）、`entry.tsx` 记一笔和编辑 |
-| [src/LedgerContext.tsx](src/LedgerContext.tsx) | 账本数据和当前月份，供各页面共享 |
-| [src/ledger.ts](src/ledger.ts) | 纯函数：金额、日期、筛选、汇总、分组、增删改、数据校验 |
-| [src/chart.ts](src/chart.ts) | 纯函数：分类占比、环形图分段、每日合计 |
-| [src/storage.ts](src/storage.ts) | 用 AsyncStorage 读写数据 |
-| [src/backup.ts](src/backup.ts) | 纯函数：备份文件格式、恢复时的合并、CSV |
-| [src/exporter.ts](src/exporter.ts)、[src/dialog.ts](src/dialog.ts) | 写文件、分享、选文件；弹窗（网页预览用浏览器弹窗） |
-| [src/components/](src/components/) | 分类图标、月份切换、环形图等组件 |
-| [src/categories.ts](src/categories.ts)、[src/theme.ts](src/theme.ts) | 分类的图标和颜色；全局配色 |
+| [src/core/ledger.ts](src/core/ledger.ts) | 金额、日期、筛选、汇总、分组、增删改、数据校验 |
+| [src/core/chart.ts](src/core/chart.ts) | 分类占比、环形图分段、每日合计 |
+| [src/core/backup.ts](src/core/backup.ts) | 备份文件格式、恢复时的合并、CSV |
+| [src/services/storage.ts](src/services/storage.ts) | 用 AsyncStorage 读写数据 |
+| [src/services/exporter.ts](src/services/exporter.ts) | 写文件、分享、选文件夹、选文件 |
+| [src/services/dialog.ts](src/services/dialog.ts) | 弹窗（网页预览里用浏览器弹窗） |
+| [src/state/LedgerContext.tsx](src/state/LedgerContext.tsx) | 账本数据和当前月份，供各页面共享 |
+| [src/ui/theme.ts](src/ui/theme.ts)、[src/ui/categories.ts](src/ui/categories.ts) | 全局配色；分类的图标和颜色 |
 | [eas.json](eas.json) | EAS 云构建配置（`preview` 出 APK，`production` 出给 Google Play 的 AAB） |
-| [assets/](assets/) | 图标和启动图；源文件是 `assets/source/` 里的 SVG |
+
+依赖方向只能往下：`app` → `components` → `state` → `services` → `core`；`ui` 只依赖 `core`。`core` 不 import 其他目录，所以能直接单测。
+
+import 用 `@/` 别名，指向 `src/`，比如 `import { formatCents } from '@/core/ledger'`。别名配在 `tsconfig.json` 的 `paths`（给 TypeScript 和 Metro 用）和 `package.json` 的 `jest.moduleNameMapper`（给 Jest 用）。
 
 设计见 [docs/designs/](docs/designs/)。

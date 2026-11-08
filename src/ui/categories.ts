@@ -1,6 +1,6 @@
 import type Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
-import type { EntryType } from './ledger';
+import type { EntryType } from '@/core/ledger';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 

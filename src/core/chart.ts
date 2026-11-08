@@ -1,4 +1,4 @@
-import { daysInMonth, type Entry, type EntryType } from './ledger';
+import { daysInMonth, type Entry, type EntryType } from '@/core/ledger';
 
 export interface Slice {
   category: string;
