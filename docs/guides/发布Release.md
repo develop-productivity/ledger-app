@@ -26,7 +26,7 @@
    ```
 
 3. 打开仓库的 Actions 页面看 Release 工作流：
-   - `verify`：检查 tag、`app.json`、CHANGELOG 三处版本一致，tag 在 main 上，跑测试。
+   - `verify`：检查 tag、`app.json`、CHANGELOG 三处版本一致，versionCode 比上一个 tag 的大，tag 在 main 上，跑测试。
    - `release`：EAS 云端打 APK（10～30 分钟），算 SHA-256，从 CHANGELOG 取说明，创建 Release。
 4. 完成后，<https://github.com/develop-productivity/ledger-app/releases/latest> 上就是新版本。
 

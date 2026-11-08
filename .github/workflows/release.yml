@@ -43,6 +43,14 @@ jobs:
             echo "::error::app.json 的 versionCode 是 $CODE，和 CHANGELOG 标题「$HEADING」不一致。是不是忘了加 1？"
             exit 1
           fi
+          PREV=$(git describe --tags --abbrev=0 --match 'v*' "$GITHUB_SHA^" 2>/dev/null || true)
+          if [ -n "$PREV" ]; then
+            PREV_CODE=$(git show "$PREV:app.json" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).expo.android.versionCode))')
+            if [ "$CODE" -le "$PREV_CODE" ]; then
+              echo "::error::versionCode 是 $CODE，不比上一个版本 $PREV 的 $PREV_CODE 大。商店会拒收，手机也不能覆盖安装"
+              exit 1
+            fi
+          fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
             echo "::error::tag 指向的提交不在 main 上，先合并 PR 再打 tag"
             exit 1

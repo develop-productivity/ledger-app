@@ -1,6 +1,6 @@
 # ledger-app 协作规则
 
-一个只存本地的记账本 App。目的是学习移动 App 工具链（真机调试、打包、安装），不上架、不变现。
+一个只存本地的记账本 App。目的是学习移动 App 工具链（真机调试、打包、安装、上架商店），不变现。上架路线见 [docs/decisions/2026-11-08-store-route.md](docs/decisions/2026-11-08-store-route.md)。
 
 ## 项目规则
 
@@ -11,6 +11,7 @@
 - 不提交密钥、签名文件（`*.jks`、`*.keystore`、`*.p12`、`credentials.json`）和生成的 `ios/`、`android/` 目录。
 - 改动走分支和 PR，不直接推 `main`（规则集强制）。PR 的 CI `check` 通过才能合并。合并由用户做。
 - 发版：改 `app.json` 版本号和 `CHANGELOG.md`，合并后推 `v*` tag，CI 自动打包并建 Release。见 [docs/guides/发布Release.md](docs/guides/发布Release.md)。`v*` tag 不能移动或删除，发错了就发下一个补丁版本。
+- App 不联网、不收集数据，这是隐私政策和商店数据安全表的前提。要加联网或收集数据的功能，先改 `PRIVACY.md` 和 `docs/store/README.md`。
 - 需要 Mac 才能做的事（iOS 构建、Xcode），写进 `docs/guides/`，让 Mac 上的 session 只读仓库就能接上。
 - 决定、设计、审查、复盘记在 `docs/` 对应目录，文件名 `YYYY-MM-DD-主题.md`，并更新该目录的 `README.md`。
 
