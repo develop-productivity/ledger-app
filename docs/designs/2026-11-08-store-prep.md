@@ -22,6 +22,8 @@
 | 商店素材 | `docs/store/`：文案（中英）、512 图标、1024×500 置顶大图、4 张 1080×1920 截图（JPEG，每张 150 KB 以内）、数据安全表的回答 |
 | AAB | `eas.json` 加 `production` 配置（`app-bundle`）。加一个**手动触发**的工作流 `play-aab.yml`：输入已发布的 tag，检出这个 tag，打 AAB，把下载链接写进运行摘要 |
 | 指南 | `docs/guides/上架Uptodown.md`、`docs/guides/上架GooglePlay.md` |
+| 权限 | `app.json` 用 `blockedPermissions` 去掉 Expo 默认带的读写存储和悬浮窗权限，商店页列出的权限和隐私政策一致。`INTERNET` 保留：去掉后开发版连不上 Metro，没法真机调试 |
+| 版本号检查 | `release.yml` 的 `verify` 加一项：versionCode 必须比上一个 `v*` tag 的大，否则商店拒收 |
 | 版本 | 1.2.0，versionCode 3 |
 
 ### 方案对比

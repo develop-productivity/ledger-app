@@ -26,7 +26,7 @@ Uptodown 的开发者后台（<https://www.uptodown.dev/>）是动态网页，�
 
 每次 GitHub Release 发了新版本，就到后台上传新的 APK。要注意两点：
 
-- `versionCode` 必须比上一次上传的大。发版流程已经检查了这一点。
+- `versionCode` 必须比上一次上传的大。发版流程的 `verify` 会检查它比上一个 tag 的大。
 - APK 必须用同一个签名密钥（EAS 保管的那个）。换了密钥，用户就不能覆盖升级。
 
 ## 走完后要记的

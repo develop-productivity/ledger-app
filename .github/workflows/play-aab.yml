@@ -49,6 +49,10 @@ jobs:
             echo "::error::tag 是 $TAG，但 app.json 的 version 是 $VERSION"
             exit 1
           fi
+          if [ "$(node -p "Boolean(require('./eas.json').build.production)")" != true ]; then
+            echo "::error::$TAG 里的 eas.json 没有 production 配置。AAB 要从 v1.2.0 及以后的版本打"
+            exit 1
+          fi
       - run: npm ci
       - name: EAS 云端打 AAB
         env:
