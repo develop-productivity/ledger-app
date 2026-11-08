@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>上架路线调研</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#1c2033;--muted:#6b7285;--line:#e6e8ef;--accent:#4c6ef5;--ok:#2bb673;--warn:#e8920c;--bad:#e5484d;--chip:#eef1fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13151c;--card:#1c1f29;--text:#e8eaf2;--muted:#9aa1b4;--line:#2c3040;--accent:#7c95ff;--chip:#262b3b}}
+:root[data-theme="dark"]{--bg:#13151c;--card:#1c1f29;--text:#e8eaf2;--muted:#9aa1b4;--line:#2c3040;--accent:#7c95ff;--chip:#262b3b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:960px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:26px;margin:0 0 4px}
+h2{font-size:19px;margin:36px 0 12px}
+.sub{color:var(--muted);margin:0 0 24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:12px 0}
+.tldr{border-left:4px solid var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.route h3{margin:0 0 6px;font-size:16px}
+.route .n{display:inline-block;width:24px;height:24px;border-radius:12px;background:var(--accent);color:#fff;text-align:center;line-height:24px;font-size:13px;margin-right:6px}
+.kv{color:var(--muted);font-size:13px}
+.kv b{color:var(--text)}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--chip);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:0 7px;border-radius:9px;font-size:12px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+ol,ul{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+a{color:var(--accent)}
+.src{font-size:12.5px;color:var(--muted);word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+<h1>记账本上架路线调研</h1>
+<p class="sub">2026-11-07 · 目标：用尽量少的现金，让 App 能在正规应用商店下载 · 带「未核实」的结论来自二手资料，动手前要再确认</p>
+
+<div class="card tldr">
+<b>结论</b>
+<ul>
+<li><b>最快、0 元：</b>Uptodown（海外 APK 商店），1～3 天能上线。适合先体验一遍"商店上架"的完整流程。</li>
+<li><b>最正规、最省钱：</b>Google Play，一次性 25 美元（约 180 元）。最大的门槛不是钱，是<b>个人新账号要先找 12 个人做 14 天封闭测试</b>，整体 3～4 周。</li>
+<li><b>国内商店：</b>现金可以做到 0 元，但要先办软著（约 60 天）和 App 备案，整体 2～3 个月。小米基本不收个人，OPPO 可能是邀请制，华为最可行。</li>
+<li><b>不建议：</b>苹果 App Store（每年 99 美元）、三星（要 D-U-N-S 商业身份）、Amazon（已停止支持安卓手机）、F-Droid（要求全部开源工具链，Expo 项目改造成本高）。</li>
+</ul>
+</div>
+
+<h2>推荐路线</h2>
+<div class="grid">
+  <div class="card route"><h3><span class="n">1</span>Uptodown</h3>
+    <div class="kv">现金 <b>0 元</b> · 耗时 <b>1～3 天</b></div>
+    <ul><li>收 APK，CI 已经能产出</li><li>需要隐私政策网址</li><li>练习：商店页文案、截图、图标</li></ul></div>
+  <div class="card route"><h3><span class="n">2</span>Google Play</h3>
+    <div class="kv">现金 <b>25 美元</b> · 耗时 <b>3～4 周</b></div>
+    <ul><li>只收 AAB，要加 production 构建</li><li>12 名测试者 × 连续 14 天封闭测试</li><li>要外币卡、能访问 Google</li></ul></div>
+  <div class="card route"><h3><span class="n">3</span>国内：华为优先</h3>
+    <div class="kv">现金 <b>0 元（自办）</b> · 耗时 <b>2～3 个月</b></div>
+    <ul><li>先自己申请软著（法定 60 天）</li><li>办 App 备案（商店会清理未备案应用）</li><li>再上华为，之后试应用宝、vivo、OPPO</li></ul></div>
+</div>
+
+<h2>不管走哪条路，都要先准备的东西</h2>
+<div class="card">
+<ol>
+<li><b>自己的 App 图标和启动图。</b>现在 <code>assets/</code> 里还是 Expo 模板的默认图标，商店审核和用户第一眼都会看到。</li>
+<li><b>隐私政策网址。</b>几乎所有商店都要。记账本不联网、不收集数据，政策可以很短；可以用 GitHub Pages 免费托管。</li>
+<li><b>商店素材。</b>一句话简介、详细描述、3～5 张手机截图（现有的界面截图流程可以复用）。</li>
+<li><b>数据导出/备份。</b>不是硬性要求，但卸载会清空数据；上架给陌生人用之前最好补上。</li>
+</ol>
+</div>
+
+<h2>各渠道对比</h2>
+<div class="wrap"><table>
+<thead><tr><th>渠道</th><th>费用</th><th>大陆个人能否注册</th><th>上架前置要求</th><th>审核</th><th>包格式</th></tr></thead>
+<tbody>
+<tr><td><b>Google Play</b></td><td>一次性 25 美元 [1]</td><td class="ok">能，需身份证件 [1][2]</td><td>2023-11-13 后注册的个人账号：12 名测试者连续 14 天封闭测试 [3]；隐私政策等声明</td><td>正式版申请通常 ≤7 天 [3]</td><td>只收 AAB [4]</td></tr>
+<tr><td><b>Uptodown</b></td><td class="ok">免费 [16]</td><td class="ok">能</td><td><span class="tag">未核实</span></td><td><span class="tag">未核实</span></td><td>APK</td></tr>
+<tr><td>APKPure</td><td>免费 <span class="tag">未核实</span></td><td><span class="tag">未核实</span></td><td>隐私政策网址（博客说法）[17]</td><td>24～48 小时（博客说法）[17]</td><td>APK / XAPK</td></tr>
+<tr><td><b>华为（中国区）</b></td><td>免费 <span class="tag">未核实</span></td><td class="ok">能，银行卡 + 身份证 + 人脸 [6]</td><td>备案信息；游戏和部分应用要软著 [7]；隐私政策</td><td>3～5 个工作日 [7]</td><td>APK / AAB [7]</td></tr>
+<tr><td>华为（海外区）</td><td>免费 <span class="tag">未核实</span></td><td><span class="tag">未核实</span></td><td>可能不需要中国备案 <span class="tag">未核实</span></td><td>同上</td><td>APK / AAB</td></tr>
+<tr><td>小米</td><td>免费</td><td class="bad">约 2024 年底起只收企业 [8] <span class="tag">未核实</span></td><td>软著、备案</td><td>—</td><td>APK</td></tr>
+<tr><td>OPPO</td><td>免费</td><td class="warn">2025-10 宣布向个人开放 [9]，可能是邀请制 <span class="tag">未核实</span></td><td>软著、备案、隐私合规</td><td>—</td><td>APK</td></tr>
+<tr><td>vivo</td><td>免费</td><td><span class="tag">未核实</span></td><td>未备案应用会被标注并清理 [10]</td><td>—</td><td>APK</td></tr>
+<tr><td>腾讯应用宝</td><td>免费</td><td><span class="tag">未核实</span></td><td>软著、备案、隐私合规；报道称传统流程显性支出近 1000 元 [11]</td><td>—</td><td>APK</td></tr>
+<tr><td>三星 Galaxy Store</td><td>免费</td><td class="bad">免费应用也要商业卖家身份（D-U-N-S 或商业登记）[13]</td><td>英文材料</td><td>资格审批几天到 10 个工作日 [13]</td><td>—</td></tr>
+<tr><td>F-Droid</td><td>0 元</td><td class="ok">能，不用实名</td><td class="warn">必须开源、由 F-Droid 从源码构建、工具链全部自由软件 [14]；Expo 项目改造很费工 [15]</td><td>几周到几个月 <span class="tag">未核实</span></td><td>F-Droid 自己构建</td></tr>
+<tr><td>Amazon Appstore</td><td colspan="5" class="bad">2025-02 起不收新安卓应用；2025-08-20 起停止支持安卓手机和平板 [18]</td></tr>
+<tr><td>苹果 App Store（对比）</td><td>每年 99 美元</td><td>—</td><td>中国区提审要填 ICP 备案号 [19]</td><td>—</td><td>IPA</td></tr>
+</tbody></table></div>
+
+<h2>国内要额外办的两件事</h2>
+<div class="card">
+<p><b>App 备案</b>（工信部 2023 年 105 号文 [20]）</p>
+<ul>
+<li>适用于"在境内从事互联网信息服务"的 App。不联网的单机 App 一般认为不在范围内 [21]，但官方原文没有明确写豁免。</li>
+<li>实际上商店会给未备案的 App 打标或下架 [10]，所以要上国内商店，仍要办。</li>
+<li>个人可以备案，本身不收费 <span class="tag">未核实</span>。走云厂商办理时，可能要求先买国内服务器 [22]。</li>
+</ul>
+<p><b>软件著作权</b></p>
+<ul>
+<li>法定审查期 60 天 [23]。官方登记费 2017 年起停征 [24]（是否包含软著：<span class="tag">未核实</span>）。</li>
+<li>加急只能找代理，几百到几千元。</li>
+</ul>
+</div>
+
+<h2>还要注意</h2>
+<div class="card">
+<ul>
+<li><b>侧载也要开发者验证：</b>Google 要求认证安卓设备上安装的 App 来自已验证的开发者。2026-09-30 起在印尼、新加坡、泰国生效，2027 年扩展到全球 [5]。到时 GitHub Release / Uptodown 发的 APK 也受影响。免费的"受限分发"账号最多装 20 台设备；25 美元的完整账号不限 [5]。</li>
+<li>Google Play 的 25 美元要用 Visa 或万事达卡支付，注册和测试过程中要能访问 Google 服务。</li>
+</ul>
+</div>
+
+<h2>出处</h2>
+<div class="card src">
+[1] https://support.google.com/googleplay/android-developer/answer/6112435<br>
+[2] https://support.google.com/googleplay/android-developer/answer/9306917<br>
+[3] https://support.google.com/googleplay/android-developer/answer/14151465<br>
+[4] https://support.google.com/googleplay/android-developer/answer/9844279<br>
+[5] https://support.google.com/android-developer-console/answer/16561738<br>
+[6] https://developer.aliyun.com/article/1648882<br>
+[7] https://developer.huawei.com/consumer/en/doc/app/50106<br>
+[8] https://blog.csdn.net/emprere/article/details/144813648<br>
+[9] https://news.mydrivers.com/1/1080/1080433.htm<br>
+[10] https://www.ithome.com/0/734/605.htm<br>
+[11] https://www.stdaily.com/web/gdxw/2026-08/20/content_566827.html<br>
+[13] https://developer.samsung.com/galaxy-store/prepare.html<br>
+[14] https://f-droid.org/docs/Inclusion_Policy<br>
+[15] https://gitlab.com/fdroid/rfp/issues/240<br>
+[16] https://developers.uptodown.com/<br>
+[17] https://hightech7bytanishq.blogspot.com/2025/02/how-to-upload-game-or-app-to-apkpure.html<br>
+[18] https://developer.amazon.com/apps-and-games/blogs/2025/02/upcoming-changes-to-amazon-appstore-for-android-devices-and-coins-program<br>
+[19] https://www.rfa.org/cantonese/news/app-09052023024604.html<br>
+[20] https://www.gov.cn/zhengce/zhengceku/202308/content_6897341.htm<br>
+[21] https://www.woshipm.com/it/5922271.html<br>
+[22] https://help.aliyun.com/zh/icp-filing/new-website-process<br>
+[23] https://www.wipo.int/wipolex/zh/text/199387<br>
+[24] https://www.tid.gov.hk/english/aboutus/tradecircular/cic/asia/2017/files/ci2017216a.pdf
+</div>
+</main>
+</body>
+</html>
