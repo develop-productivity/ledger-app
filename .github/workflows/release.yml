@@ -1,0 +1,115 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: tag、app.json、CHANGELOG 三处版本一致
+        run: |
+          set -eu
+          TAG="$GITHUB_REF_NAME"
+          VERSION=$(node -p "require('./app.json').expo.version")
+          if [ "$TAG" != "v$VERSION" ]; then
+            echo "::error::tag 是 $TAG，但 app.json 的 version 是 $VERSION"
+            exit 1
+          fi
+          HEADING=$(grep -E "^## v${VERSION}([（ ]|$)" CHANGELOG.md || true)
+          if [ -z "$HEADING" ]; then
+            echo "::error::CHANGELOG.md 里没有 \"## v$VERSION\" 这一节"
+            exit 1
+          fi
+          CODE=$(node -p "require('./app.json').expo.android.versionCode")
+          if ! echo "$HEADING" | grep -qE "versionCode ${CODE}([^0-9]|$)"; then
+            echo "::error::app.json 的 versionCode 是 $CODE，和 CHANGELOG 标题「$HEADING」不一致。是不是忘了加 1？"
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::tag 指向的提交不在 main 上，先合并 PR 再打 tag"
+            exit 1
+          fi
+      - run: npm ci
+      - name: 类型检查 + 单元测试
+        run: npm run check
+
+  release:
+    name: release
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    # EXPO_TOKEN 只给需要它的步骤，npm ci 等步骤里的第三方脚本读不到
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: 检查 EXPO_TOKEN
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::没有配置仓库密钥 EXPO_TOKEN。做法见 docs/guides/发布Release.md"
+            exit 1
+          fi
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: EAS 云端打 APK
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli@27.5.0 build -p android --profile preview --non-interactive --wait --json > build.json
+      - name: 下载 APK，算 SHA-256
+        run: |
+          set -eu
+          URL=$(node -p "const b=require('./build.json')[0].artifacts; b.applicationArchiveUrl || b.buildUrl")
+          APK="ledger-$TAG.apk"
+          curl -fL --retry 3 -o "$APK" "$URL"
+          sha256sum "$APK" | tee "$APK.sha256"
+      - name: 写 Release 说明
+        run: |
+          set -eu
+          APK="ledger-$TAG.apk"
+          {
+            awk -v h="## $TAG" 'index($0, h)==1 {f=1; next} /^## /{f=0} f' CHANGELOG.md
+            echo
+            echo '## 安装'
+            echo
+            echo "1. 在 Android 手机上下载下面的 \`$APK\`。"
+            echo '2. 系统提示"禁止安装未知来源应用"时，按提示允许浏览器安装。'
+            echo '3. 华为、小米等手机开着"纯净模式"时，要先关掉。'
+            echo
+            echo '## SHA-256'
+            echo
+            echo '```'
+            cat "$APK.sha256"
+            echo '```'
+          } > notes.md
+          cat notes.md
+      - name: 创建 Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" "ledger-$TAG.apk" "ledger-$TAG.apk.sha256" \
+            --verify-tag --title "记账本 $TAG" --notes-file notes.md
