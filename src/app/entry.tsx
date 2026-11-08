@@ -13,10 +13,10 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { CategoryIcon } from '../components/CategoryIcon';
-import { LoadGate } from '../components/LoadGate';
-import { Segmented } from '../components/Segmented';
-import { useLedger } from '../LedgerContext';
+import { CategoryIcon } from '@/components/CategoryIcon';
+import { LoadGate } from '@/components/LoadGate';
+import { Segmented } from '@/components/Segmented';
+import { useLedger } from '@/state/LedgerContext';
 import {
   addDays,
   CATEGORIES,
@@ -28,8 +28,8 @@ import {
   toDateString,
   type Entry,
   type EntryType,
-} from '../ledger';
-import { colors, numberFont, radius } from '../theme';
+} from '@/core/ledger';
+import { colors, numberFont, radius } from '@/ui/theme';
 
 export default function EntryScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();

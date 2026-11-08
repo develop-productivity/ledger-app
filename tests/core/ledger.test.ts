@@ -16,7 +16,7 @@ import {
   summarize,
   toDateString,
   type Entry,
-} from './ledger';
+} from '@/core/ledger';
 
 const e = (over: Partial<Entry>): Entry => ({
   id: Math.random().toString(36),

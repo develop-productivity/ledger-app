@@ -1,4 +1,4 @@
-import { isEntry, type Entry } from './ledger';
+import { isEntry, type Entry } from '@/core/ledger';
 
 /** 备份文件格式的版本，跟着本机存储格式（ledger.v1）走 */
 export const BACKUP_VERSION = 1;

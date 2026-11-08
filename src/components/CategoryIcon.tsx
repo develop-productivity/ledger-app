@@ -1,8 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { View } from 'react-native';
-import { categoryMeta } from '../categories';
-import type { EntryType } from '../ledger';
-import { colors } from '../theme';
+import { categoryMeta } from '@/ui/categories';
+import type { EntryType } from '@/core/ledger';
+import { colors } from '@/ui/theme';
 
 export function CategoryIcon({
   type,

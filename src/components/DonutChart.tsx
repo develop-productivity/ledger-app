@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { donutSegments } from '../chart';
-import { colors, numberFont } from '../theme';
+import { donutSegments } from '@/core/chart';
+import { colors, numberFont } from '@/ui/theme';
 
 export function DonutChart({
   data,

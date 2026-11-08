@@ -1,8 +1,8 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { LedgerProvider } from '../LedgerContext';
-import { colors } from '../theme';
+import { LedgerProvider } from '@/state/LedgerContext';
+import { colors } from '@/ui/theme';
 
 export default function RootLayout() {
   return (

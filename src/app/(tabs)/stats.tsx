@@ -2,16 +2,16 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { breakdown, dailyTotals } from '../../chart';
-import { categoryMeta } from '../../categories';
-import { CategoryIcon } from '../../components/CategoryIcon';
-import { DonutChart } from '../../components/DonutChart';
-import { LoadGate } from '../../components/LoadGate';
-import { MonthSwitcher } from '../../components/MonthSwitcher';
-import { Segmented } from '../../components/Segmented';
-import { useLedger } from '../../LedgerContext';
-import { entriesOfMonth, formatCents, toDateString, type Entry, type EntryType } from '../../ledger';
-import { colors, numberFont, radius, shadow } from '../../theme';
+import { breakdown, dailyTotals } from '@/core/chart';
+import { categoryMeta } from '@/ui/categories';
+import { CategoryIcon } from '@/components/CategoryIcon';
+import { DonutChart } from '@/components/DonutChart';
+import { LoadGate } from '@/components/LoadGate';
+import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { Segmented } from '@/components/Segmented';
+import { useLedger } from '@/state/LedgerContext';
+import { entriesOfMonth, formatCents, toDateString, type Entry, type EntryType } from '@/core/ledger';
+import { colors, numberFont, radius, shadow } from '@/ui/theme';
 
 export default function StatsScreen() {
   return <LoadGate>{(entries) => <Stats entries={entries} />}</LoadGate>;

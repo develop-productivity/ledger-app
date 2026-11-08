@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CORRUPT_KEY_PREFIX, STORAGE_KEY, loadEntries, saveEntries } from './storage';
-import type { Entry } from './ledger';
+import { CORRUPT_KEY_PREFIX, STORAGE_KEY, loadEntries, saveEntries } from '@/services/storage';
+import type { Entry } from '@/core/ledger';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
