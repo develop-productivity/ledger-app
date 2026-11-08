@@ -31,6 +31,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="me"
+        options={{
+          title: '我的',
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color as string} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

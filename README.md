@@ -2,7 +2,7 @@
 
 一个用 Expo（React Native）写的极简记账 App。数据只存在手机本地。
 
-功能：记收入 / 支出、按月查看收支和结余、编辑和删除记录、饼图和每日柱状图统计。
+功能：记收入 / 支出、按月查看收支和结余、编辑和删除记录、饼图和每日柱状图统计、备份恢复和导出 CSV。
 
 ## 下载安装（Android）
 
@@ -23,17 +23,20 @@ npx expo start --web # 在浏览器里预览界面（删除确认框在浏览器
 - 真机调试：[docs/guides/真机调试.md](docs/guides/真机调试.md)
 - 打包并装到手机：[docs/guides/打包安装.md](docs/guides/打包安装.md)
 - 发布 Release：[docs/guides/发布Release.md](docs/guides/发布Release.md)
+- 思考题（学习用）：[docs/guides/思考题.md](docs/guides/思考题.md)
 - 上架商店：[docs/guides/上架Uptodown.md](docs/guides/上架Uptodown.md)、[docs/guides/上架GooglePlay.md](docs/guides/上架GooglePlay.md)；文案和图片在 [docs/store/](docs/store/)
 
 ## 代码结构
 
 | 文件 | 作用 |
 |---|---|
-| [src/app/](src/app/) | 页面（Expo Router，一个文件一个页面）：`(tabs)/index.tsx` 明细、`(tabs)/stats.tsx` 统计、`entry.tsx` 记一笔和编辑 |
+| [src/app/](src/app/) | 页面（Expo Router，一个文件一个页面）：`(tabs)/index.tsx` 明细、`(tabs)/stats.tsx` 统计、`(tabs)/me.tsx` 我的（备份、恢复、导出）、`entry.tsx` 记一笔和编辑 |
 | [src/LedgerContext.tsx](src/LedgerContext.tsx) | 账本数据和当前月份，供各页面共享 |
 | [src/ledger.ts](src/ledger.ts) | 纯函数：金额、日期、筛选、汇总、分组、增删改、数据校验 |
 | [src/chart.ts](src/chart.ts) | 纯函数：分类占比、环形图分段、每日合计 |
 | [src/storage.ts](src/storage.ts) | 用 AsyncStorage 读写数据 |
+| [src/backup.ts](src/backup.ts) | 纯函数：备份文件格式、恢复时的合并、CSV |
+| [src/exporter.ts](src/exporter.ts)、[src/dialog.ts](src/dialog.ts) | 写文件、分享、选文件；弹窗（网页预览用浏览器弹窗） |
 | [src/components/](src/components/) | 分类图标、月份切换、环形图等组件 |
 | [src/categories.ts](src/categories.ts)、[src/theme.ts](src/theme.ts) | 分类的图标和颜色；全局配色 |
 | [eas.json](eas.json) | EAS 云构建配置（`preview` 出 APK，`production` 出给 Google Play 的 AAB） |

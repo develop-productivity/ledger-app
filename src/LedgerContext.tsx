@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Alert } from 'react-native';
+import { mergeEntries } from './backup';
 import { removeEntry, toMonthKey, upsertEntry, type Entry } from './ledger';
 import { loadEntries, saveEntries } from './storage';
 
@@ -9,6 +10,8 @@ interface LedgerState {
   reload: () => void;
   save: (entry: Entry) => void;
   remove: (id: string) => void;
+  /** 恢复备份：按 id 合并，只新增，不删除、不覆盖本机记录 */
+  mergeIn: (incoming: Entry[]) => void;
   month: string;
   setMonth: (month: string) => void;
 }
@@ -47,9 +50,13 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
     setEntries((prev) => (prev === null ? prev : removeEntry(prev, id)));
   }, []);
 
+  const mergeIn = useCallback((incoming: Entry[]) => {
+    setEntries((prev) => (prev === null ? prev : mergeEntries(prev, incoming).entries));
+  }, []);
+
   const value = useMemo(
-    () => ({ entries, loadFailed, reload, save, remove, month, setMonth }),
-    [entries, loadFailed, reload, save, remove, month],
+    () => ({ entries, loadFailed, reload, save, remove, mergeIn, month, setMonth }),
+    [entries, loadFailed, reload, save, remove, mergeIn, month],
   );
 
   return <LedgerContext.Provider value={value}>{children}</LedgerContext.Provider>;
