@@ -1,8 +1,0 @@
-{
-  "ios": {
-    "CFBundleDisplayName": "Ledger"
-  },
-  "android": {
-    "app_name": "Ledger"
-  }
-}

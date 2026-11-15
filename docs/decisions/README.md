@@ -7,3 +7,4 @@
 | 2026-11-07 | [main 分支保护，PR 和发版走 CI](2026-11-07-branch-rules-and-ci.md) | 生效 |
 | 2026-11-08 | [上架路线：先 Uptodown，再 Google Play](2026-11-08-store-route.md) | 生效 |
 | 2026-11-08 | [目录按职责分层，测试放 tests/](2026-11-08-code-layout.md) | 生效 |
+| 2026-11-15 | [App 默认名改为 "Ledger"，中文手机显示"记账本"](2026-11-15-app-name.md) | 生效 |

@@ -6,8 +6,8 @@
 
 | 项目 | 内容 |
 |---|---|
-| 应用名 | 记账本 |
-| 英文名（商店要求填英文时用） | Ledger - Simple Offline Budget |
+| 应用名（商店标题） | 中文：记账本；英文：Ledger - Simple Offline Budget |
+| APK 里的名称 | 默认 "Ledger"；手机系统语言是中文时显示"记账本"（v1.3.0 起） |
 | 包名 | `com.developproductivity.ledger` |
 | 分类 | 财务（Finance） |
 | 内容分级 | 所有人（无暴力、无用户生成内容、无广告） |

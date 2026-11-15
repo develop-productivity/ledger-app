@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "记账本",
+    "name": "Ledger",
     "slug": "ledger-app",
     "version": "1.3.0",
     "orientation": "portrait",
@@ -69,7 +69,8 @@
     ],
     "scheme": "ledger",
     "locales": {
-      "en": "./locales/en.json"
+      "zh": "./locales/zh.json",
+      "zh-Hans": "./locales/zh.json"
     }
   }
 }
