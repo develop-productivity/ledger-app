@@ -1,9 +1,7 @@
 import {
   addDays,
   centsToInput,
-  dateLabel,
   daysInMonth,
-  monthLabel,
   removeEntry,
   upsertEntry,
   deserialize,
@@ -100,16 +98,7 @@ test('addDays 跨月、跨年', () => {
   expect(addDays('2028-02-28', 1)).toBe('2028-02-29');
 });
 
-test('dateLabel 今天、昨天、同年、跨年', () => {
-  const today = '2026-11-07';
-  expect(dateLabel('2026-11-07', today)).toBe('今天');
-  expect(dateLabel('2026-11-06', today)).toBe('昨天');
-  expect(dateLabel('2026-11-05', today)).toBe('11月5日 周四');
-  expect(dateLabel('2025-12-31', today)).toBe('2025年12月31日 周三');
-});
-
-test('monthLabel 和 daysInMonth', () => {
-  expect(monthLabel('2026-03')).toBe('2026年3月');
+test('daysInMonth', () => {
   expect(daysInMonth('2026-02')).toBe(28);
   expect(daysInMonth('2026-12')).toBe(31);
 });

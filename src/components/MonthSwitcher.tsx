@@ -1,6 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { monthLabel, shiftMonth, toMonthKey } from '@/core/ledger';
+import { shiftMonth, toMonthKey } from '@/core/ledger';
+import { monthLabel } from '@/i18n';
+import { useSettings } from '@/state/SettingsContext';
 import { colors } from '@/ui/theme';
 
 export function MonthSwitcher({
@@ -12,19 +14,20 @@ export function MonthSwitcher({
   onChange: (month: string) => void;
   light?: boolean;
 }) {
+  const { lang, t } = useSettings();
   const atCurrent = month >= toMonthKey(new Date());
   const tint = light ? '#fff' : colors.text;
   return (
     <View style={styles.row}>
-      <Pressable hitSlop={12} onPress={() => onChange(shiftMonth(month, -1))} accessibilityLabel="上个月">
+      <Pressable hitSlop={12} onPress={() => onChange(shiftMonth(month, -1))} accessibilityLabel={t.month.prev}>
         <Ionicons name="chevron-back" size={20} color={tint} />
       </Pressable>
-      <Text style={[styles.label, { color: tint }]}>{monthLabel(month)}</Text>
+      <Text style={[styles.label, { color: tint }]}>{monthLabel(month, lang)}</Text>
       <Pressable
         hitSlop={12}
         disabled={atCurrent}
         onPress={() => onChange(shiftMonth(month, 1))}
-        accessibilityLabel="下个月"
+        accessibilityLabel={t.month.next}
       >
         <Ionicons name="chevron-forward" size={20} color={tint} style={{ opacity: atCurrent ? 0.3 : 1 }} />
       </Pressable>

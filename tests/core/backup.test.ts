@@ -1,5 +1,8 @@
 import { backupFileName, csvFileName, mergeEntries, parseBackup, toBackupJson, toCsv } from '@/core/backup';
 import { serialize, type Entry } from '@/core/ledger';
+import { csvLabels } from '@/i18n';
+
+const zhCsv = csvLabels('zh');
 
 const e = (id: string, over: Partial<Entry> = {}): Entry => ({
   id,
@@ -32,7 +35,7 @@ describe('备份往返', () => {
   });
 
   test('开头有 BOM 也能读', () => {
-    expect(parseBackup('﻿' + toBackupJson([e('a')], now)).ok).toBe(true);
+    expect(parseBackup('\uFEFF' + toBackupJson([e('a')], now)).ok).toBe(true);
   });
 });
 
@@ -115,31 +118,43 @@ describe('mergeEntries', () => {
 
 describe('toCsv', () => {
   test('表头、BOM、按日期从新到旧、金额用元', () => {
-    const csv = toCsv([
-      e('a', { date: '2026-11-01', amountCents: 5 }),
-      e('b', { date: '2026-11-08', type: 'income', category: '工资', amountCents: 1200000 }),
-    ]);
-    expect(csv).toBe('﻿日期,类型,分类,金额,备注\r\n2026-11-08,收入,工资,12000.00,\r\n2026-11-01,支出,餐饮,0.05,\r\n');
+    const csv = toCsv(
+      [
+        e('a', { date: '2026-11-01', amountCents: 5 }),
+        e('b', { date: '2026-11-08', type: 'income', category: '工资', amountCents: 1200000 }),
+      ],
+      zhCsv,
+    );
+    expect(csv).toBe('\uFEFF日期,类型,分类,金额,备注\r\n2026-11-08,收入,工资,12000.00,\r\n2026-11-01,支出,餐饮,0.05,\r\n');
   });
 
   test('同一天按记的先后，后记的在前', () => {
-    const csv = toCsv([e('a', { createdAt: 1, note: '早' }), e('b', { createdAt: 2, note: '晚' })]);
+    const csv = toCsv([e('a', { createdAt: 1, note: '早' }), e('b', { createdAt: 2, note: '晚' })], zhCsv);
     expect(csv.split('\r\n')[1]).toContain('晚');
   });
 
   test('逗号、引号、换行要加引号转义', () => {
-    const csv = toCsv([e('a', { note: '火锅, "辣"\n很好吃' })]);
+    const csv = toCsv([e('a', { note: '火锅, "辣"\n很好吃' })], zhCsv);
     expect(csv).toContain('"火锅, ""辣""\n很好吃"');
   });
 
   test('公式开头的备注前面加单引号', () => {
     for (const note of ['=1+1', '+86', '-5', '@SUM(A1)']) {
-      expect(toCsv([e('a', { note })]).split('\r\n')[1].endsWith(`,'${note}`)).toBe(true);
+      expect(toCsv([e('a', { note })], zhCsv).split('\r\n')[1].endsWith(`,'${note}`)).toBe(true);
     }
   });
 
   test('没有记录时只有表头', () => {
-    expect(toCsv([])).toBe('﻿日期,类型,分类,金额,备注\r\n');
+    expect(toCsv([], zhCsv)).toBe('\uFEFF日期,类型,分类,金额,备注\r\n');
+  });
+
+  test('英文：表头、类型、分类都是英文，备注原样', () => {
+    const csv = toCsv([e('a', { note: '午饭' }), e('b', { type: 'income', category: '红包', date: '2026-11-07' })], csvLabels('en'));
+    expect(csv).toBe('\uFEFFDate,Type,Category,Amount,Note\r\n2026-11-08,Expense,Food,12.50,午饭\r\n2026-11-07,Income,Cash gifts,12.50,\r\n');
+  });
+
+  test('翻译表里没有的分类原样导出', () => {
+    expect(toCsv([e('a', { category: '宠物' })], csvLabels('en'))).toContain(',Expense,宠物,');
   });
 });
 

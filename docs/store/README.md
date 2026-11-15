@@ -52,6 +52,10 @@ English (80 characters max):
 · 没有广告，没有第三方统计
 · 源代码公开：github.com/develop-productivity/ledger-app
 
+【中文和英文】
+· 界面支持中文和英文，跟随手机语言，也可以手动切换
+· 货币符号可选：¥、$、€、£ 等
+
 注意：数据只存在本机，卸载 App 会删除全部记录。卸载或换手机前，请先在「我的」里备份。
 ```
 
@@ -79,7 +83,11 @@ YOUR DATA STAYS ON YOUR PHONE
 - No ads. No analytics.
 - Open source: github.com/develop-productivity/ledger-app
 
-Note: the app interface is in Chinese. Data is stored only on your device; uninstalling the app deletes all records, so back up first.
+ENGLISH AND CHINESE
+- The interface follows your phone language, or pick one in settings
+- Choose your currency symbol: $, €, £, ¥ and more
+
+Note: data is stored only on your device; uninstalling the app deletes all records, so back up first.
 ```
 
 ## 图片

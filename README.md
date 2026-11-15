@@ -35,6 +35,7 @@ src/
     entry.tsx     记一笔和编辑
   components/   可复用的界面组件：分类图标、月份切换、环形图……
   core/         纯函数业务逻辑，不碰 React、不碰存储，都有单测
+  i18n/         界面文字（中文、英文）和日期格式
   services/     和系统、存储打交道：AsyncStorage、写文件、分享、弹窗
   state/        全局状态（React Context）
   ui/           配色、分类的图标和颜色
@@ -48,14 +49,18 @@ docs/           决定、设计、审查、指南、商店素材
 | [src/core/ledger.ts](src/core/ledger.ts) | 金额、日期、筛选、汇总、分组、增删改、数据校验 |
 | [src/core/chart.ts](src/core/chart.ts) | 分类占比、环形图分段、每日合计 |
 | [src/core/backup.ts](src/core/backup.ts) | 备份文件格式、恢复时的合并、CSV |
+| [src/core/settings.ts](src/core/settings.ts) | 语言和货币设置、货币列表、带符号的金额 |
+| [src/i18n/](src/i18n/) | `zh.ts` 中文（基准）、`en.ts` 英文、`format.ts` 日期格式、`index.ts` 选语言和翻译分类 |
 | [src/services/storage.ts](src/services/storage.ts) | 用 AsyncStorage 读写数据 |
 | [src/services/exporter.ts](src/services/exporter.ts) | 写文件、分享、选文件夹、选文件 |
 | [src/services/dialog.ts](src/services/dialog.ts) | 弹窗（网页预览里用浏览器弹窗） |
 | [src/state/LedgerContext.tsx](src/state/LedgerContext.tsx) | 账本数据和当前月份，供各页面共享 |
+| [src/state/SettingsContext.tsx](src/state/SettingsContext.tsx) | 当前语言、翻译文本 `t`、货币 |
+| [src/services/settings.ts](src/services/settings.ts) | 读写语言和货币设置 |
 | [src/ui/theme.ts](src/ui/theme.ts)、[src/ui/categories.ts](src/ui/categories.ts) | 全局配色；分类的图标和颜色 |
 | [eas.json](eas.json) | EAS 云构建配置（`preview` 出 APK，`production` 出给 Google Play 的 AAB） |
 
-依赖方向只能往下：`app` → `components` → `state` → `services` → `core`；`ui` 只依赖 `core`。`core` 不 import 其他目录，所以能直接单测。
+依赖方向只能往下：`app` → `components` → `state` → `services` → `core`；`ui`、`i18n` 只依赖 `core`。`core` 不 import 其他目录，所以能直接单测。
 
 import 用 `@/` 别名，指向 `src/`，比如 `import { formatCents } from '@/core/ledger'`。别名配在 `tsconfig.json` 的 `paths`（给 TypeScript 和 Metro 用）和 `package.json` 的 `jest.moduleNameMapper`（给 Jest 用）。
 

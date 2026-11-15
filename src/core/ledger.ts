@@ -65,21 +65,7 @@ export function addDays(date: string, delta: number): string {
   return toDateString(d);
 }
 
-const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-
-export function dateLabel(date: string, today: string): string {
-  if (date === today) return '今天';
-  if (date === addDays(today, -1)) return '昨天';
-  const d = parseDate(date);
-  const md = `${d.getMonth() + 1}月${d.getDate()}日`;
-  const prefix = date.slice(0, 4) === today.slice(0, 4) ? '' : `${d.getFullYear()}年`;
-  return `${prefix}${md} ${WEEKDAYS[d.getDay()]}`;
-}
-
-export function monthLabel(monthKey: string): string {
-  const [y, m] = monthKey.split('-').map(Number);
-  return `${y}年${m}月`;
-}
+// 日期的显示格式（今天、11月5日 周四、Nov 2026）按语言不同，在 src/i18n/format.ts
 
 export function daysInMonth(monthKey: string): number {
   const [y, m] = monthKey.split('-').map(Number);

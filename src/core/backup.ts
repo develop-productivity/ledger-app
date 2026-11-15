@@ -1,4 +1,4 @@
-import { isEntry, type Entry } from '@/core/ledger';
+import { isEntry, type Entry, type EntryType } from '@/core/ledger';
 
 /** 备份文件格式的版本，跟着本机存储格式（ledger.v1）走 */
 export const BACKUP_VERSION = 1;
@@ -23,7 +23,7 @@ export type ParseResult =
 export function parseBackup(text: string): ParseResult {
   let data: unknown;
   try {
-    data = JSON.parse(text.replace(/^﻿/, ''));
+    data = JSON.parse(text.replace(/^\uFEFF/, ''));
   } catch {
     return { ok: false, reason: 'not-json' };
   }
@@ -96,20 +96,27 @@ function csvField(value: string): string {
   return /[",\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 }
 
+/** CSV 里跟语言有关的文字，由 i18n 提供 */
+export interface CsvLabels {
+  header: string[];
+  type: (type: EntryType) => string;
+  category: (type: EntryType, name: string) => string;
+}
+
 function plainYuan(cents: number): string {
   return `${Math.floor(cents / 100)}.${String(cents % 100).padStart(2, '0')}`;
 }
 
-/** 导出给 Excel / WPS 用的 CSV。开头带 BOM，按日期从新到旧。 */
-export function toCsv(entries: Entry[]): string {
+/** 导出给 Excel / WPS 用的 CSV。开头带 BOM，按日期从新到旧。表头、类型、分类跟着界面语言。 */
+export function toCsv(entries: Entry[], labels: CsvLabels): string {
   const rows = [...entries]
     .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt - a.createdAt)
     .map((e) =>
-      [e.date, e.type === 'expense' ? '支出' : '收入', e.category, plainYuan(e.amountCents), e.note]
+      [e.date, labels.type(e.type), labels.category(e.type, e.category), plainYuan(e.amountCents), e.note]
         .map(csvField)
         .join(','),
     );
-  return '﻿' + ['日期,类型,分类,金额,备注', ...rows].join('\r\n') + '\r\n';
+  return '\uFEFF' + [labels.header.map(csvField).join(','), ...rows].join('\r\n') + '\r\n';
 }
 
 function stamp(now: Date): string {

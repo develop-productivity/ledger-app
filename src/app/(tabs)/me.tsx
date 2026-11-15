@@ -5,20 +5,18 @@ import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { backupFileName, csvFileName, mergeEntries, parseBackup, toBackupJson, toCsv } from '@/core/backup';
 import { LoadGate } from '@/components/LoadGate';
+import { Segmented } from '@/components/Segmented';
+import { CURRENCIES, currencySymbol, type CurrencyCode, type LangPref } from '@/core/settings';
+import { csvLabels } from '@/i18n';
 import { choose, confirm, notify } from '@/services/dialog';
 import { pickTextFile, saveTextFileToFolder, shareTextFile, type ExportOutcome } from '@/services/exporter';
 import { useLedger } from '@/state/LedgerContext';
+import { useSettings } from '@/state/SettingsContext';
 import type { Entry } from '@/core/ledger';
 import { colors, radius, shadow } from '@/ui/theme';
 
 const REPO = 'https://github.com/develop-productivity/ledger-app';
 const PRIVACY = `${REPO}/blob/main/PRIVACY.md`;
-
-const PARSE_ERRORS = {
-  'not-json': '这不是记账本的备份文件。',
-  'bad-format': '文件内容不完整或已损坏，没有导入任何记录。',
-  'newer-version': '这份备份来自更新版本的记账本，请先升级 App 再恢复。',
-} as const;
 
 export default function MeScreen() {
   return <LoadGate>{(entries) => <Me entries={entries} />}</LoadGate>;
@@ -28,6 +26,7 @@ type Busy = 'backup' | 'restore' | 'csv' | null;
 
 function Me({ entries }: { entries: Entry[] }) {
   const { mergeIn } = useLedger();
+  const { lang, t } = useSettings();
   const insets = useSafeAreaInsets();
   const [busy, setBusy] = useState<Busy>(null);
 
@@ -37,35 +36,40 @@ function Me({ entries }: { entries: Entry[] }) {
     try {
       await task();
     } catch {
-      notify('操作失败', '请再试一次。');
+      notify(t.me.failTitle, t.me.failBody);
     } finally {
       setBusy(null);
     }
   }
 
   function afterExport(outcome: ExportOutcome, name: string) {
-    if (outcome === 'unavailable') notify('无法分享', '这台设备不支持系统分享。');
-    if (outcome === 'saved') notify('已保存', `文件 ${name} 已存到你选的文件夹。`);
+    if (outcome === 'unavailable') notify(t.me.shareUnavailableTitle, t.me.shareUnavailableBody);
+    if (outcome === 'saved') notify(t.me.savedTitle, t.me.savedBody(name));
   }
 
   function exportFile(kind: 'backup' | 'csv') {
     if (entries.length === 0) {
-      notify('还没有记录', '记几笔之后再来导出吧。');
+      notify(t.me.emptyTitle, t.me.emptyBody);
       return;
     }
     const now = new Date();
     const [name, text, mime] =
       kind === 'backup'
         ? [backupFileName(now), toBackupJson(entries, now), 'application/json']
-        : [csvFileName(now), toCsv(entries), 'text/csv'];
+        : [csvFileName(now), toCsv(entries, csvLabels(lang)), 'text/csv'];
     run(kind, async () => {
       // Android 的分享面板不一定有"存到本机"，所以多给一个"存到手机文件夹"
       const target =
         Platform.OS === 'android'
-          ? await choose(kind === 'backup' ? '备份到哪里' : '导出到哪里', '', [
-              { key: 'folder', text: '存到手机文件夹' },
-              { key: 'share', text: '分享给其他 App' },
-            ])
+          ? await choose(
+              kind === 'backup' ? t.me.whereBackup : t.me.whereExport,
+              '',
+              [
+                { key: 'folder', text: t.me.toFolder },
+                { key: 'share', text: t.me.toShare },
+              ],
+              t.common.cancel,
+            )
           : 'share';
       if (target === null) return;
       const outcome =
@@ -80,70 +84,114 @@ function Me({ entries }: { entries: Entry[] }) {
       if (text === null) return;
       const parsed = parseBackup(text);
       if (!parsed.ok) {
-        notify('无法恢复', PARSE_ERRORS[parsed.reason]);
+        notify(t.me.restoreFailTitle, t.me.parseErrors[parsed.reason]);
         return;
       }
       const preview = mergeEntries(entries, parsed.entries);
       if (preview.added === 0) {
-        notify('没有新记录', `备份里的 ${parsed.entries.length} 条记录本机都已经有了。`);
+        notify(t.me.noNewTitle, t.me.noNewBody(parsed.entries.length));
         return;
       }
       const skipped = preview.same + preview.conflicts;
-      const ok = await confirm(
-        '恢复备份',
-        `将新增 ${preview.added} 条记录${skipped ? `，跳过本机已有的 ${skipped} 条` : ''}。\n只新增，不会删除或修改本机的记录。`,
-        '恢复',
-      );
+      const ok = await confirm(t.me.restoreTitle, t.me.restoreBody(preview.added, skipped), {
+        ok: t.me.restoreOk,
+        cancel: t.common.cancel,
+      });
       if (!ok) return;
       mergeIn(parsed.entries);
-      notify('恢复完成', `新增了 ${preview.added} 条记录。`);
+      notify(t.me.restoreDoneTitle, t.me.restoreDoneBody(preview.added));
     });
   }
 
   return (
     <ScrollView contentContainerStyle={[styles.page, { paddingTop: insets.top + 12 }]}>
-      <Text style={styles.title}>我的</Text>
+      <Text style={styles.title}>{t.me.title}</Text>
 
       <View style={styles.tip}>
         <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary} />
-        <Text style={styles.tipText}>
-          数据只存在这台手机上，共 {entries.length} 条记录。卸载 App 或换手机前，先备份到文件。
-        </Text>
+        <Text style={styles.tipText}>{t.me.tip(entries.length)}</Text>
       </View>
 
-      <Text style={styles.section}>数据</Text>
+      <Text style={styles.section}>{t.me.sectionData}</Text>
       <View style={styles.card}>
         <Row
           icon="cloud-upload-outline"
-          title="备份到文件"
-          desc="存到手机、网盘，或发给自己"
+          title={t.me.backup}
+          desc={t.me.backupDesc}
           busy={busy === 'backup'}
           onPress={() => exportFile('backup')}
         />
         <Row
           icon="cloud-download-outline"
-          title="从备份恢复"
-          desc="选一个备份文件，把记录加回来"
+          title={t.me.restore}
+          desc={t.me.restoreDesc}
           busy={busy === 'restore'}
           onPress={restore}
         />
         <Row
           icon="grid-outline"
-          title="导出表格（CSV）"
-          desc="用 Excel、WPS 打开"
+          title={t.me.csv}
+          desc={t.me.csvDesc}
           busy={busy === 'csv'}
           onPress={() => exportFile('csv')}
           last
         />
       </View>
 
-      <Text style={styles.section}>关于</Text>
+      <Text style={styles.section}>{t.me.sectionPrefs}</Text>
+      <Prefs />
+
+      <Text style={styles.section}>{t.me.sectionAbout}</Text>
       <View style={styles.card}>
-        <Row icon="information-circle-outline" title="版本" value={Constants.expoConfig?.version ?? '-'} />
-        <Row icon="document-text-outline" title="隐私政策" onPress={() => Linking.openURL(PRIVACY)} />
-        <Row icon="logo-github" title="源代码" onPress={() => Linking.openURL(REPO)} last />
+        <Row icon="information-circle-outline" title={t.me.version} value={Constants.expoConfig?.version ?? '-'} />
+        <Row icon="document-text-outline" title={t.me.privacy} onPress={() => Linking.openURL(PRIVACY)} />
+        <Row icon="logo-github" title={t.me.source} onPress={() => Linking.openURL(REPO)} last />
       </View>
     </ScrollView>
+  );
+}
+
+function Prefs() {
+  const { settings, t, autoCurrency, setLangPref, setCurrencyPref } = useSettings();
+  const chips: { code: CurrencyCode | null; label: string }[] = [
+    { code: null, label: t.me.currencyAuto(currencySymbol(autoCurrency)) },
+    ...CURRENCIES.map((c) => ({ code: c.code, label: `${c.symbol} ${c.code}` })),
+  ];
+  return (
+    <View style={[styles.card, styles.prefs]}>
+      <View style={styles.prefRow}>
+        <Text style={styles.prefTitle}>{t.me.language}</Text>
+        {/* 语言名用它自己的语言写，切错了也认得出来 */}
+        <Segmented<LangPref>
+          options={[
+            { value: 'system', label: t.me.langSystem },
+            { value: 'zh', label: '中文' },
+            { value: 'en', label: 'English' },
+          ]}
+          value={settings.lang}
+          onChange={setLangPref}
+        />
+      </View>
+      <View style={styles.prefRow}>
+        <Text style={styles.prefTitle}>{t.me.currency}</Text>
+        <View style={styles.chips}>
+          {chips.map((c) => {
+            const active = c.code === settings.currency;
+            return (
+              <Pressable
+                key={c.code ?? 'auto'}
+                onPress={() => setCurrencyPref(c.code)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <Text style={[styles.chipText, active && styles.chipTextActive]}>{c.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -210,4 +258,19 @@ const styles = StyleSheet.create({
   rowTitle: { fontSize: 15, color: colors.text },
   rowDesc: { marginTop: 2, fontSize: 12, color: colors.textMuted },
   rowValue: { fontSize: 14, color: colors.textSecondary },
+  prefs: { paddingVertical: 14, gap: 16 },
+  prefRow: { gap: 8 },
+  prefTitle: { fontSize: 15, color: colors.text },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: radius.sm,
+    backgroundColor: colors.bg,
+    borderWidth: 1,
+    borderColor: colors.bg,
+  },
+  chipActive: { backgroundColor: colors.primarySoft, borderColor: colors.primary },
+  chipText: { fontSize: 13, color: colors.textSecondary },
+  chipTextActive: { color: colors.primary, fontWeight: '600' },
 });
