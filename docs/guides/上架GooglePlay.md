@@ -22,7 +22,9 @@ Play Console 的页面经常改。下面的步骤按 2026-11 的规则写，**�
 ## 3. 建应用、第一次上传（人来做）
 
 1. Play Console → 创建应用：
-   - 应用名：记账本；默认语言：中文（简体）- zh-CN；类型：应用；免费。
+   - 默认语言：**English (United States) – en-US**；应用名：`Ledger - Simple Offline Budget`；类型：应用；免费。
+   - 建好后在"商店设置 → 翻译"里加 **中文（简体）– zh-CN**，应用名填"记账本"。
+   - 英文商店页用 `docs/store/` 里的英文文案、`feature-graphic-en.jpg`、`screenshots/en/`；中文商店页用中文那一套。
 2. 按 [docs/store/README.md](../store/README.md) 填：商店页文案、图标、置顶大图、截图、隐私政策网址、数据安全表、内容分级问卷、目标受众（18 岁以上即可）、广告声明（无广告）。
 3. 测试 → **封闭测试**（Closed testing）→ 新建版本 → 上传 AAB。
 

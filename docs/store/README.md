@@ -10,7 +10,7 @@
 | APK 里的名称 | 默认 "Ledger"；手机系统语言是中文时显示"记账本"（v1.3.0 起） |
 | 包名 | `com.developproductivity.ledger` |
 | 分类 | 财务（Finance） |
-| 内容分级 | 所有人（无暴力、无用户生成内容、无广告） |
+| 内容分级 | 所有人（无暴力、无用户生成内容、无广告）。要选 PEGI 时选 **PEGI 3**（Uptodown 必填） |
 | 是否免费 | 免费，无内购，无广告 |
 | 隐私政策网址 | <https://github.com/develop-productivity/ledger-app/blob/main/PRIVACY.md> |
 | 联系方式 | <https://github.com/develop-productivity/ledger-app/issues>（需要邮箱时，填开发者账号的邮箱） |
@@ -94,11 +94,13 @@ Note: data is stored only on your device; uninstalling the app deletes all recor
 
 | 文件 | 尺寸 | 用途 |
 |---|---|---|
-| [icon-512.png](icon-512.png) | 512×512 PNG | 商店图标（Google Play 要求 512×512） |
-| [feature-graphic.jpg](feature-graphic.jpg) | 1024×500 JPEG | Google Play 置顶大图（Feature graphic） |
-| [screenshots/](screenshots/) | 1080×1920 JPEG，4 张 | 手机截图，按文件名顺序上传 |
+| [icon-512.png](icon-512.png) | 512×512 PNG（RGBA） | 商店图标（Google Play 要求 512×512、32 位） |
+| [feature-graphic-zh.jpg](feature-graphic-zh.jpg)、[feature-graphic-en.jpg](feature-graphic-en.jpg) | 1024×500 JPEG | Google Play 置顶大图（Feature graphic），中英文商店页各用一张 |
+| [screenshots/zh/](screenshots/zh/)、[screenshots/en/](screenshots/en/) | 1080×1920 JPEG，各 5 张 | 手机截图，按文件名顺序上传：明细、统计、每日、记一笔、我的 |
 
-截图是用浏览器按手机尺寸渲染的，界面和真机一致。图标的源文件在 [assets/source/](../../assets/source/)（SVG）。
+只能填一种语言的商店（如 Uptodown），用英文那一套。
+
+这些图都由脚本生成，界面改了就重新生成，见 [scripts/store/README.md](../../scripts/store/README.md)。图标的源文件是 [assets/source/](../../assets/source/) 里的 SVG。
 
 ## 数据安全表（Google Play 的 Data safety 等）
 
