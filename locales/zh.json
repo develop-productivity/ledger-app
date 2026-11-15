@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "记账本"
+  },
+  "android": {
+    "app_name": "记账本"
+  }
+}

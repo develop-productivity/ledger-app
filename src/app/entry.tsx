@@ -2,7 +2,6 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -16,12 +15,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { LoadGate } from '@/components/LoadGate';
 import { Segmented } from '@/components/Segmented';
+import { categoryLabel, dateLabel } from '@/i18n';
+import { confirm, notify } from '@/services/dialog';
 import { useLedger } from '@/state/LedgerContext';
+import { useSettings } from '@/state/SettingsContext';
 import {
   addDays,
   CATEGORIES,
   centsToInput,
-  dateLabel,
   formatCents,
   newId,
   parseAmount,
@@ -34,6 +35,7 @@ import { colors, numberFont, radius } from '@/ui/theme';
 export default function EntryScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const lastFound = useRef<Entry | undefined>(undefined);
+  const { t } = useSettings();
   return (
     <LoadGate>
       {(entries) => {
@@ -44,9 +46,9 @@ export default function EntryScreen() {
         if (id && !existing) {
           return (
             <View style={{ flex: 1 }}>
-              <EntryHeader title="编辑" />
+              <EntryHeader title={t.entry.titleEdit} />
               <View style={styles.missing}>
-                <Text style={styles.missingText}>这条记录已经不存在了</Text>
+                <Text style={styles.missingText}>{t.entry.missing}</Text>
               </View>
             </View>
           );
@@ -60,17 +62,18 @@ export default function EntryScreen() {
 // 自己画顶栏：各平台原生导航头对 headerLeft 的处理不一致，Web 上会被忽略
 function EntryHeader({ title, onDelete }: { title: string; onDelete?: () => void }) {
   const insets = useSafeAreaInsets();
+  const { t } = useSettings();
   // iOS 的 modal 是卡片式，不盖住状态栏，不需要再让出顶部安全区
   const top = Platform.OS === 'ios' ? 8 : insets.top + 8;
   return (
     <View style={[styles.header, { paddingTop: top }]}>
-      <Pressable onPress={() => router.back()} hitSlop={10} accessibilityLabel="关闭" style={styles.headerSide}>
+      <Pressable onPress={() => router.back()} hitSlop={10} accessibilityLabel={t.entry.close} style={styles.headerSide}>
         <Ionicons name="close" size={26} color={colors.text} />
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>
       <View style={[styles.headerSide, { alignItems: 'flex-end' }]}>
         {onDelete ? (
-          <Pressable onPress={onDelete} hitSlop={10} accessibilityLabel="删除">
+          <Pressable onPress={onDelete} hitSlop={10} accessibilityLabel={t.common.delete}>
             <Ionicons name="trash-outline" size={22} color={colors.expense} />
           </Pressable>
         ) : null}
@@ -81,6 +84,7 @@ function EntryHeader({ title, onDelete }: { title: string; onDelete?: () => void
 
 function EntryForm({ existing }: { existing?: Entry }) {
   const { save, remove } = useLedger();
+  const { lang, t, symbol } = useSettings();
   const insets = useSafeAreaInsets();
   const today = toDateString(new Date());
 
@@ -109,7 +113,7 @@ function EntryForm({ existing }: { existing?: Entry }) {
     if (done.current) return;
     const amountCents = parseAmount(amountText);
     if (amountCents === null) {
-      Alert.alert('金额不对', '请输入大于 0 的数字，最多两位小数。');
+      notify(t.entry.badAmountTitle, t.entry.badAmountBody);
       return;
     }
     done.current = true;
@@ -126,40 +130,36 @@ function EntryForm({ existing }: { existing?: Entry }) {
     router.back();
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!existing) return;
-    Alert.alert('删除这条记录？', `${existing.category} ${formatCents(existing.amountCents)}`, [
-      { text: '取消', style: 'cancel' },
-      {
-        text: '删除',
-        style: 'destructive',
-        onPress: () => {
-          if (done.current) return;
-          done.current = true;
-          remove(existing.id);
-          router.back();
-        },
-      },
-    ]);
+    const ok = await confirm(
+      t.detail.deleteTitle,
+      `${categoryLabel(lang, existing.type, existing.category)} ${formatCents(existing.amountCents)}`,
+      { ok: t.common.delete, cancel: t.common.cancel, destructive: true },
+    );
+    if (!ok || done.current) return;
+    done.current = true;
+    remove(existing.id);
+    router.back();
   };
 
   const accent = type === 'income' ? colors.income : colors.expense;
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <EntryHeader title={existing ? '编辑' : '记一笔'} onDelete={existing ? confirmDelete : undefined} />
+      <EntryHeader title={existing ? t.entry.titleEdit : t.entry.titleNew} onDelete={existing ? confirmDelete : undefined} />
       <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
         <Segmented
           options={[
-            { value: 'expense', label: '支出' },
-            { value: 'income', label: '收入' },
+            { value: 'expense', label: t.common.type.expense },
+            { value: 'income', label: t.common.type.income },
           ]}
           value={type}
           onChange={switchType}
         />
 
         <View style={[styles.amountBox, { borderColor: accent }]}>
-          <Text style={[styles.currency, { color: accent }]}>¥</Text>
+          <Text style={[styles.currency, { color: accent }]}>{symbol}</Text>
           <TextInput
             ref={amountRef}
             style={[styles.amountInput, numberFont, { color: accent }]}
@@ -178,7 +178,12 @@ function EntryForm({ existing }: { existing?: Entry }) {
             return (
               <Pressable key={c} style={styles.gridItem} onPress={() => setCategory(c)}>
                 <CategoryIcon type={type} name={c} size={46} active={active} />
-                <Text style={[styles.gridLabel, active && { color: colors.text, fontWeight: '600' }]}>{c}</Text>
+                <Text
+                  style={[styles.gridLabel, active && { color: colors.text, fontWeight: '600' }]}
+                  numberOfLines={2}
+                >
+                  {categoryLabel(lang, type, c)}
+                </Text>
               </Pressable>
             );
           })}
@@ -186,17 +191,17 @@ function EntryForm({ existing }: { existing?: Entry }) {
 
         <View style={styles.field}>
           <Ionicons name="calendar-outline" size={18} color={colors.textSecondary} />
-          <Text style={styles.fieldLabel}>日期</Text>
+          <Text style={styles.fieldLabel}>{t.entry.date}</Text>
           <View style={styles.dateStepper}>
-            <Pressable hitSlop={10} onPress={() => setDate((d) => addDays(d, -1))} accessibilityLabel="前一天">
+            <Pressable hitSlop={10} onPress={() => setDate((d) => addDays(d, -1))} accessibilityLabel={t.entry.prevDay}>
               <Ionicons name="chevron-back" size={18} color={colors.primary} />
             </Pressable>
-            <Text style={styles.dateText}>{dateLabel(date, today)}</Text>
+            <Text style={styles.dateText}>{dateLabel(date, today, lang)}</Text>
             <Pressable
               hitSlop={10}
               disabled={date >= today}
               onPress={() => setDate((d) => addDays(d, 1))}
-              accessibilityLabel="后一天"
+              accessibilityLabel={t.entry.nextDay}
             >
               <Ionicons name="chevron-forward" size={18} color={colors.primary} style={{ opacity: date >= today ? 0.3 : 1 }} />
             </Pressable>
@@ -207,7 +212,7 @@ function EntryForm({ existing }: { existing?: Entry }) {
           <Ionicons name="create-outline" size={18} color={colors.textSecondary} />
           <TextInput
             style={styles.noteInput}
-            placeholder="添加备注"
+            placeholder={t.entry.notePlaceholder}
             placeholderTextColor={colors.textMuted}
             value={note}
             onChangeText={setNote}
@@ -223,7 +228,7 @@ function EntryForm({ existing }: { existing?: Entry }) {
           style={({ pressed }) => [styles.saveButton, { backgroundColor: accent }, pressed && { opacity: 0.85 }]}
           onPress={submit}
         >
-          <Text style={styles.saveText}>保存</Text>
+          <Text style={styles.saveText}>{t.entry.save}</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -245,7 +250,7 @@ const styles = StyleSheet.create({
   amountInput: { flex: 1, minWidth: 0, fontSize: 40, fontWeight: '700', paddingVertical: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 16 },
   gridItem: { width: '20%', alignItems: 'center', gap: 6 },
-  gridLabel: { fontSize: 12, color: colors.textSecondary },
+  gridLabel: { fontSize: 12, color: colors.textSecondary, textAlign: 'center', paddingHorizontal: 2 },
   field: {
     flexDirection: 'row',
     alignItems: 'center',

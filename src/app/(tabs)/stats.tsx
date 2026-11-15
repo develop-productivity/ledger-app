@@ -9,7 +9,9 @@ import { DonutChart } from '@/components/DonutChart';
 import { LoadGate } from '@/components/LoadGate';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { Segmented } from '@/components/Segmented';
+import { categoryLabel } from '@/i18n';
 import { useLedger } from '@/state/LedgerContext';
+import { useSettings } from '@/state/SettingsContext';
 import { entriesOfMonth, formatCents, toDateString, type Entry, type EntryType } from '@/core/ledger';
 import { colors, numberFont, radius, shadow } from '@/ui/theme';
 
@@ -26,18 +28,18 @@ function Stats({ entries }: { entries: Entry[] }) {
   const slices = useMemo(() => breakdown(monthEntries, type), [monthEntries, type]);
   const days = useMemo(() => dailyTotals(monthEntries, month, type), [monthEntries, month, type]);
   const total = slices.reduce((s, x) => s + x.cents, 0);
-  const label = type === 'expense' ? '支出' : '收入';
+  const { lang, t } = useSettings();
 
   return (
     <ScrollView contentContainerStyle={[styles.page, { paddingTop: insets.top + 12 }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>统计</Text>
+        <Text style={styles.title}>{t.stats.title}</Text>
         <MonthSwitcher month={month} onChange={setMonth} />
       </View>
       <Segmented
         options={[
-          { value: 'expense', label: '支出' },
-          { value: 'income', label: '收入' },
+          { value: 'expense', label: t.common.type.expense },
+          { value: 'income', label: t.common.type.income },
         ]}
         value={type}
         onChange={setType}
@@ -46,23 +48,26 @@ function Stats({ entries }: { entries: Entry[] }) {
       {total === 0 ? (
         <View style={[styles.card, styles.empty]}>
           <Ionicons name="pie-chart-outline" size={48} color={colors.textMuted} />
-          <Text style={styles.emptyText}>这个月没有{label}记录</Text>
+          <Text style={styles.emptyText}>{t.stats.empty(type)}</Text>
         </View>
       ) : (
         <>
           <View style={[styles.card, { alignItems: 'center' }]}>
             <DonutChart
               data={slices.map((s) => ({ ratio: s.ratio, color: categoryMeta(type, s.category).color }))}
-              title={`总${label}`}
+              title={t.stats.total(type)}
               value={formatCents(total)}
             />
             <Text style={styles.caption}>
-              共 {monthEntries.filter((e) => e.type === type).length} 笔，最多的是「{slices[0].category}」
+              {t.stats.caption(
+                monthEntries.filter((e) => e.type === type).length,
+                categoryLabel(lang, type, slices[0].category),
+              )}
             </Text>
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>{label}排行</Text>
+            <Text style={styles.cardTitle}>{t.stats.ranking(type)}</Text>
             {slices.map((s) => {
               const { color } = categoryMeta(type, s.category);
               return (
@@ -71,7 +76,7 @@ function Stats({ entries }: { entries: Entry[] }) {
                   <View style={{ flex: 1, gap: 6 }}>
                     <View style={styles.rankLine}>
                       <Text style={styles.rankName}>
-                        {s.category}
+                        {categoryLabel(lang, type, s.category)}
                         <Text style={styles.rankPct}>  {(s.ratio * 100).toFixed(1)}%</Text>
                       </Text>
                       <Text style={[styles.rankAmount, numberFont]}>{formatCents(s.cents)}</Text>
@@ -86,8 +91,13 @@ function Stats({ entries }: { entries: Entry[] }) {
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>每日{label}</Text>
-            <DailyBars days={days} month={month} color={type === 'expense' ? colors.expense : colors.income} />
+            <Text style={styles.cardTitle}>{t.stats.daily(type)}</Text>
+            <DailyBars
+              days={days}
+              month={month}
+              color={type === 'expense' ? colors.expense : colors.income}
+              maxLabel={t.stats.maxDay}
+            />
           </View>
         </>
       )}
@@ -95,7 +105,17 @@ function Stats({ entries }: { entries: Entry[] }) {
   );
 }
 
-function DailyBars({ days, month, color }: { days: number[]; month: string; color: string }) {
+function DailyBars({
+  days,
+  month,
+  color,
+  maxLabel,
+}: {
+  days: number[];
+  month: string;
+  color: string;
+  maxLabel: (amount: string) => string;
+}) {
   const max = Math.max(...days, 1);
   const today = toDateString(new Date());
   const ticks = [1, 10, 20, days.length];
@@ -128,7 +148,7 @@ function DailyBars({ days, month, color }: { days: number[]; month: string; colo
           </Text>
         ))}
       </View>
-      <Text style={styles.barMax}>最高一天 {formatCents(max)}</Text>
+      <Text style={styles.barMax}>{maxLabel(formatCents(max))}</Text>
     </View>
   );
 }

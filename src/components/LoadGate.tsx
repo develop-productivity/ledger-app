@@ -1,17 +1,19 @@
 import type { ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useLedger } from '@/state/LedgerContext';
+import { useSettings } from '@/state/SettingsContext';
 import type { Entry } from '@/core/ledger';
 import { colors, radius } from '@/ui/theme';
 
 export function LoadGate({ children }: { children: (entries: Entry[]) => ReactNode }) {
   const { entries, loadFailed, reload } = useLedger();
+  const { t } = useSettings();
   if (loadFailed) {
     return (
       <View style={styles.center}>
-        <Text style={styles.text}>读取失败</Text>
+        <Text style={styles.text}>{t.load.failed}</Text>
         <Pressable style={styles.button} onPress={reload}>
-          <Text style={styles.buttonText}>重试</Text>
+          <Text style={styles.buttonText}>{t.load.retry}</Text>
         </Pressable>
       </View>
     );

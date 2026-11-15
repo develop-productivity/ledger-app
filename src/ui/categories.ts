@@ -33,5 +33,7 @@ const INCOME: Record<string, CategoryMeta> = {
 const FALLBACK: CategoryMeta = { icon: 'pricetag', color: '#8A94A6' };
 
 export function categoryMeta(type: EntryType, name: string): CategoryMeta {
-  return (type === 'income' ? INCOME : EXPENSE)[name] ?? FALLBACK;
+  const table = type === 'income' ? INCOME : EXPENSE;
+  // 只查表里自己的键，"constructor" 这类名字不能查到原型链上
+  return Object.prototype.hasOwnProperty.call(table, name) ? table[name] : FALLBACK;
 }

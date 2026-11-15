@@ -1,8 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Alert } from 'react-native';
 import { mergeEntries } from '@/core/backup';
 import { removeEntry, toMonthKey, upsertEntry, type Entry } from '@/core/ledger';
 import { loadEntries, saveEntries } from '@/services/storage';
+import { useSettings } from '@/state/SettingsContext';
 
 interface LedgerState {
   entries: Entry[] | null;
@@ -22,13 +23,17 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [month, setMonth] = useState(() => toMonthKey(new Date()));
+  // 用 ref 拿文本：切换语言不应该让 reload 变化，否则会重新读一遍数据
+  const { t } = useSettings();
+  const tRef = useRef(t);
+  tRef.current = t;
 
   const reload = useCallback(() => {
     setLoadFailed(false);
     loadEntries()
       .then(({ entries, recovered }) => {
         setEntries(entries);
-        if (recovered) Alert.alert('数据无法读取', '原数据已备份，账本从空白开始。');
+        if (recovered) Alert.alert(tRef.current.load.corruptTitle, tRef.current.load.corruptBody);
       })
       .catch(() => setLoadFailed(true));
   }, []);
@@ -38,7 +43,7 @@ export function LedgerProvider({ children }: { children: ReactNode }) {
   // entries 为 null 时还没读完，不能保存，否则会用空列表覆盖已有数据
   useEffect(() => {
     if (entries === null) return;
-    saveEntries(entries).catch(() => Alert.alert('保存失败', '这次修改可能没有存下来。'));
+    saveEntries(entries).catch(() => Alert.alert(tRef.current.load.saveFailedTitle, tRef.current.load.saveFailedBody));
   }, [entries]);
 
   const save = useCallback((entry: Entry) => {

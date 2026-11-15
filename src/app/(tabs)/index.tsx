@@ -1,14 +1,17 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Alert, Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SectionList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CategoryIcon } from '@/components/CategoryIcon';
 import { LoadGate } from '@/components/LoadGate';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { formatMoney } from '@/core/settings';
+import { categoryLabel, dateLabel } from '@/i18n';
+import { confirm } from '@/services/dialog';
 import { useLedger } from '@/state/LedgerContext';
+import { useSettings } from '@/state/SettingsContext';
 import {
-  dateLabel,
   entriesOfMonth,
   formatCents,
   groupByDate,
@@ -24,6 +27,7 @@ export default function DetailScreen() {
 
 function Detail({ entries }: { entries: Entry[] }) {
   const { month, setMonth, remove } = useLedger();
+  const { lang, t, symbol } = useSettings();
   const insets = useSafeAreaInsets();
   const today = toDateString(new Date());
 
@@ -39,11 +43,13 @@ function Detail({ entries }: { entries: Entry[] }) {
     [monthEntries],
   );
 
-  const confirmDelete = (e: Entry) => {
-    Alert.alert('删除这条记录？', `${e.category} ${formatCents(e.amountCents)}`, [
-      { text: '取消', style: 'cancel' },
-      { text: '删除', style: 'destructive', onPress: () => remove(e.id) },
-    ]);
+  const confirmDelete = async (e: Entry) => {
+    const ok = await confirm(
+      t.detail.deleteTitle,
+      `${categoryLabel(lang, e.type, e.category)} ${formatCents(e.amountCents)}`,
+      { ok: t.common.delete, cancel: t.common.cancel, destructive: true },
+    );
+    if (ok) remove(e.id);
   };
 
   return (
@@ -56,24 +62,24 @@ function Detail({ entries }: { entries: Entry[] }) {
         ListHeaderComponent={
           <View style={[styles.hero, { paddingTop: insets.top + 12 }]}>
             <MonthSwitcher month={month} onChange={setMonth} light />
-            <Text style={styles.heroLabel}>本月结余</Text>
+            <Text style={styles.heroLabel}>{t.detail.balance}</Text>
             <Text style={[styles.heroValue, numberFont]} numberOfLines={1} adjustsFontSizeToFit>
-              {formatCents(sum.balance)}
+              {formatMoney(sum.balance, symbol)}
             </Text>
             <View style={styles.heroRow}>
-              <HeroStat label="收入" value={sum.income} />
+              <HeroStat label={t.common.type.income} value={sum.income} />
               <View style={styles.heroDivider} />
-              <HeroStat label="支出" value={sum.expense} />
+              <HeroStat label={t.common.type.expense} value={sum.expense} />
             </View>
           </View>
         }
         renderSectionHeader={({ section }) => (
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionDate}>{dateLabel(section.title, today)}</Text>
+            <Text style={styles.sectionDate}>{dateLabel(section.title, today, lang)}</Text>
             <Text style={[styles.sectionTotals, numberFont]}>
-              {section.totals.expense > 0 ? `支 ${formatCents(section.totals.expense)}` : ''}
+              {section.totals.expense > 0 ? t.detail.dayExpense(formatCents(section.totals.expense)) : ''}
               {section.totals.expense > 0 && section.totals.income > 0 ? '   ' : ''}
-              {section.totals.income > 0 ? `收 ${formatCents(section.totals.income)}` : ''}
+              {section.totals.income > 0 ? t.detail.dayIncome(formatCents(section.totals.income)) : ''}
             </Text>
           </View>
         )}
@@ -90,7 +96,7 @@ function Detail({ entries }: { entries: Entry[] }) {
           >
             <CategoryIcon type={item.type} name={item.category} />
             <View style={styles.rowText}>
-              <Text style={styles.rowTitle}>{item.category}</Text>
+              <Text style={styles.rowTitle}>{categoryLabel(lang, item.type, item.category)}</Text>
               {item.note ? (
                 <Text style={styles.rowNote} numberOfLines={1}>
                   {item.note}
@@ -109,15 +115,15 @@ function Detail({ entries }: { entries: Entry[] }) {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="document-text-outline" size={48} color={colors.textMuted} />
-            <Text style={styles.emptyTitle}>这个月还没有记账</Text>
-            <Text style={styles.emptyHint}>点右下角的 + 记第一笔</Text>
+            <Text style={styles.emptyTitle}>{t.detail.emptyTitle}</Text>
+            <Text style={styles.emptyHint}>{t.detail.emptyHint}</Text>
           </View>
         }
       />
       <Pressable
         style={({ pressed }) => [styles.fab, pressed && { transform: [{ scale: 0.94 }] }]}
         onPress={() => router.push('/entry')}
-        accessibilityLabel="记一笔"
+        accessibilityLabel={t.detail.add}
       >
         <Ionicons name="add" size={30} color="#fff" />
       </Pressable>

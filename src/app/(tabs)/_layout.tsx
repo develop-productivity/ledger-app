@@ -1,8 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
+import { useSettings } from '@/state/SettingsContext';
 import { colors } from '@/ui/theme';
 
 export default function TabLayout() {
+  const { t } = useSettings();
   return (
     <Tabs
       screenOptions={{
@@ -16,7 +18,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: '明细',
+          title: t.tabs.detail,
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'receipt' : 'receipt-outline'} size={size} color={color as string} />
           ),
@@ -25,7 +27,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stats"
         options={{
-          title: '统计',
+          title: t.tabs.stats,
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'pie-chart' : 'pie-chart-outline'} size={size} color={color as string} />
           ),
@@ -34,7 +36,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="me"
         options={{
-          title: '我的',
+          title: t.tabs.me,
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color as string} />
           ),
