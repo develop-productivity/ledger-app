@@ -60,7 +60,7 @@ docs/           决定、设计、审查、指南、商店素材
 | [src/ui/theme.ts](src/ui/theme.ts)、[src/ui/categories.ts](src/ui/categories.ts) | 全局配色；分类的图标和颜色 |
 | [eas.json](eas.json) | EAS 云构建配置（`preview` 出 APK，`production` 出给 Google Play 的 AAB） |
 
-依赖方向只能往下：`app` → `components` → `state` → `services` → `core`；`ui`、`i18n` 只依赖 `core`。`core` 不 import 其他目录，所以能直接单测。
+依赖方向只能往下：`app` → `components` → `state` → `services` → `core`；`ui`、`i18n` 和 `services` 同一层，只依赖 `core`，上面的 `app`、`components`、`state` 都可以用它们。`core` 不 import 其他目录，所以能直接单测。
 
 import 用 `@/` 别名，指向 `src/`，比如 `import { formatCents } from '@/core/ledger'`。别名配在 `tsconfig.json` 的 `paths`（给 TypeScript 和 Metro 用）和 `package.json` 的 `jest.moduleNameMapper`（给 Jest 用）。
 

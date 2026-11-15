@@ -40,12 +40,26 @@ describe('分类翻译', () => {
     expect(categoryLabel('en', 'expense', '宠物')).toBe('宠物');
   });
 
-  test('英文翻译里没有中文字符', () => {
-    const json = JSON.stringify(strings('en'), (key, value) =>
-      key === 'expense' || key === 'income' ? Object.values(value as object) : value,
-    );
-    const values = json.replace(/"[^"]*[一-龥][^"]*":/g, '');
-    expect(values).not.toMatch(/[一-龥]/);
+  test('英文翻译里没有中文字符（包括带参数的文本）', () => {
+    // 分类表的键是数据里的中文名，只检查值；函数用样例参数调用一次再检查
+    const found: string[] = [];
+    const walk = (v: unknown, path: string): void => {
+      if (typeof v === 'string') {
+        if (/[\u4e00-\u9fa5]/.test(v)) found.push(`${path}: ${v}`);
+      } else if (typeof v === 'function') {
+        walk(v.length >= 2 ? v(3, 1) : v.length === 1 ? v(2) : v(), path);
+        if (v.length === 1) walk(v('expense'), path + '(expense)');
+      } else if (v && typeof v === 'object') {
+        for (const [k, child] of Object.entries(v)) walk(child, `${path}.${k}`);
+      }
+    };
+    walk(strings('en'), 'en');
+    expect(found).toEqual([]);
+  });
+
+  test('分类名是 constructor 这类原型链上的名字，也原样显示', () => {
+    expect(categoryLabel('en', 'expense', 'constructor')).toBe('constructor');
+    expect(categoryLabel('en', 'income', 'toString')).toBe('toString');
   });
 });
 

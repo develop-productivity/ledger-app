@@ -28,7 +28,9 @@ export function resolveLang(pref: LangPref, deviceLanguages: (string | null)[]):
 
 /** 数据里存的是中文分类名，显示时翻译；翻译表里没有的（如手工改过的备份）原样显示 */
 export function categoryLabel(lang: Lang, type: EntryType, name: string): string {
-  return STRINGS[lang].categories[type][name] ?? name;
+  const table = STRINGS[lang].categories[type];
+  // 只查表里自己的键：手工改过的备份里可能有 "constructor" 这类名字，会查到原型链上的函数
+  return Object.prototype.hasOwnProperty.call(table, name) ? table[name] : name;
 }
 
 export function csvLabels(lang: Lang): CsvLabels {

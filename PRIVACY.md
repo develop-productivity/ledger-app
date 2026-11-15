@@ -21,7 +21,7 @@ This policy applies to the Android app "记账本" (Ledger, package `com.develop
 1. **No personal data is collected.** The app needs no account or sign-in. It does not access your contacts, location, photos or other personal data.
 2. **Your data stays on your device.** The amounts, categories, notes and dates you enter are stored only in the app's local storage on your phone. They are never uploaded to any server, and the developer cannot see them.
 3. **No data is sent over the network. No ads, no analytics.** The app contains no advertising, analytics or crash-reporting SDKs.
-4. **Backup and export.** A file is created only when you tap "备份到文件" (Back up) or "导出表格" (Export CSV). It is handed to the app you choose in the system share sheet (for example cloud storage or a chat app). You decide where it goes; the developer never receives it.
+4. **Backup and export.** A file is created only when you tap "Back up to a file" or "Export spreadsheet (CSV)" (in the Chinese interface: "备份到文件", "导出表格"). It is handed to the app you choose in the system share sheet (for example cloud storage or a chat app). You decide where it goes; the developer never receives it.
 5. **Deleting your data.** Uninstalling the app, or clearing its data in system settings, permanently deletes all records.
 6. **Children.** The app is not directed at children under 13 and collects no data from them.
 7. **Changes.** If this policy changes, this page will be updated together with the effective date above.
