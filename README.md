@@ -23,6 +23,7 @@ npx expo start --web # 在浏览器里预览界面（删除确认框在浏览器
 - 真机调试：[docs/guides/真机调试.md](docs/guides/真机调试.md)
 - 打包并装到手机：[docs/guides/打包安装.md](docs/guides/打包安装.md)
 - 发布 Release：[docs/guides/发布Release.md](docs/guides/发布Release.md)
+- 申请软著：[docs/guides/申请软著.md](docs/guides/申请软著.md)；材料在 [docs/copyright/](docs/copyright/)，由 [scripts/copyright/make.js](scripts/copyright/make.js) 生成
 - 思考题（学习用）：[docs/guides/思考题.md](docs/guides/思考题.md)
 - 上架商店：[docs/guides/上架Uptodown.md](docs/guides/上架Uptodown.md)、[docs/guides/上架GooglePlay.md](docs/guides/上架GooglePlay.md)；文案和图片在 [docs/store/](docs/store/)，生成图片的脚本在 [scripts/store/](scripts/store/)
 
@@ -43,6 +44,7 @@ tests/          单元测试，子目录和 src/ 一一对应
 assets/         图标和启动图；source/ 里是 SVG 源文件
 docs/           决定、设计、审查、指南、商店素材
 scripts/store/  生成图标和商店截图的脚本（不属于 App）
+scripts/copyright/  生成软著材料（源程序、用户手册 PDF）的脚本
 ```
 
 | 文件 | 作用 |
