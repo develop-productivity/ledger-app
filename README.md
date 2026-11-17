@@ -8,7 +8,7 @@
 
 到 [Releases](https://github.com/develop-productivity/ledger-app/releases/latest) 下载最新的 `.apk`，在手机上打开安装。系统提示"未知来源"时，按提示允许浏览器安装。
 
-更新内容见 [CHANGELOG.md](CHANGELOG.md)。隐私政策见 [PRIVACY.md](PRIVACY.md)。
+更新内容见 [CHANGELOG.md](CHANGELOG.md)。隐私政策见 [PRIVACY.md](PRIVACY.md)，用户协议见 [TERMS.md](TERMS.md)。
 
 ## 快速开始
 
@@ -51,7 +51,8 @@ scripts/store/  生成图标和商店截图的脚本（不属于 App）
 | [src/core/chart.ts](src/core/chart.ts) | 分类占比、环形图分段、每日合计 |
 | [src/core/backup.ts](src/core/backup.ts) | 备份文件格式、恢复时的合并、CSV |
 | [src/core/settings.ts](src/core/settings.ts) | 语言和货币设置、货币列表、带符号的金额 |
-| [src/i18n/](src/i18n/) | `zh.ts` 中文（基准）、`en.ts` 英文、`format.ts` 日期格式、`index.ts` 选语言和翻译分类 |
+| [src/i18n/](src/i18n/) | `zh.ts` 中文（基准）、`en.ts` 英文、`format.ts` 日期格式、`index.ts` 选语言和翻译分类、`legal.ts` 隐私政策和用户协议全文 |
+| [src/core/consent.ts](src/core/consent.ts)、[src/state/ConsentContext.tsx](src/state/ConsentContext.tsx) | 首次启动的同意记录和同意页；没同意之前不读账本数据 |
 | [src/services/storage.ts](src/services/storage.ts) | 用 AsyncStorage 读写数据 |
 | [src/services/exporter.ts](src/services/exporter.ts) | 写文件、分享、选文件夹、选文件 |
 | [src/services/dialog.ts](src/services/dialog.ts) | 弹窗（网页预览里用浏览器弹窗） |

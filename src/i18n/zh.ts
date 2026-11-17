@@ -68,6 +68,11 @@ export const zh = {
     sectionAbout: '关于',
     version: '版本',
     privacy: '隐私政策',
+    terms: '用户协议',
+    withdraw: '撤回同意',
+    withdrawTitle: '撤回同意？',
+    withdrawBody: '撤回后需要重新同意《用户协议》和《隐私政策》才能继续使用。本机的记录不会被删除。',
+    withdrawOk: '撤回',
     source: '源代码',
     failTitle: '操作失败',
     failBody: '请再试一次。',
@@ -96,6 +101,21 @@ export const zh = {
     restoreDoneTitle: '恢复完成',
     restoreDoneBody: (added: number) => `新增了 ${added} 条记录。`,
   },
+  consent: {
+    welcome: '欢迎使用记账本',
+    intro:
+      '记账本不需要注册，不联网，不收集任何个人信息。你的记录只保存在这台手机上。\n\n使用前，请阅读并同意以下协议：',
+    terms: '《用户协议》',
+    privacy: '《隐私政策》',
+    agree: '同意并继续',
+    disagree: '不同意',
+    needTitle: '需要你的同意',
+    needBody: '不同意《用户协议》和《隐私政策》，就无法使用记账本。',
+    exit: '退出应用',
+    back: '再看看',
+    saveFailed: '同意记录没有保存成功，下次打开时会再询问一次。',
+  },
+  legal: { back: '返回' },
   csv: { header: ['日期', '类型', '分类', '金额', '备注'] },
   /** 数据里存的分类名就是中文，中文界面原样显示 */
   categories: {

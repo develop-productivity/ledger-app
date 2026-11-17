@@ -13,6 +13,7 @@
 | 内容分级 | 所有人（无暴力、无用户生成内容、无广告）。要选 PEGI 时选 **PEGI 3**（Uptodown 必填） |
 | 是否免费 | 免费，无内购，无广告 |
 | 隐私政策网址 | <https://github.com/develop-productivity/ledger-app/blob/main/PRIVACY.md> |
+| 隐私政策网址（国内商店） | 待定：GitHub 在国内经常打不开，要一个国内能访问的网址，方案见国内上架调研。App 内已经能直接查看全文（v1.4.0 起） |
 | 联系方式 | <https://github.com/develop-productivity/ledger-app/issues>（需要邮箱时，填开发者账号的邮箱） |
 | 官网 | <https://github.com/develop-productivity/ledger-app> |
 
