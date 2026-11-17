@@ -32,13 +32,17 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
 
   const agree = useCallback(() => {
     setStatus('granted'); // 这次先进入；没存上的话下次再问
-    saveConsent(makeConsent(new Date())).catch(() => notify(t.consent.needTitle, t.consent.saveFailed));
+    saveConsent(makeConsent(new Date())).catch(() => notify(t.consent.saveFailedTitle, t.consent.saveFailed));
   }, [t]);
 
   const withdraw = useCallback(async () => {
-    await clearConsent();
-    setStatus('needed');
-  }, []);
+    try {
+      await clearConsent();
+      setStatus('needed');
+    } catch {
+      notify(t.me.failTitle, t.me.withdrawFailed);
+    }
+  }, [t]);
 
   const value = useMemo(() => ({ withdraw }), [withdraw]);
 

@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BackHandler, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LegalDocument, LegalHeader } from '@/components/LegalDocument';
@@ -13,6 +13,16 @@ export function ConsentScreen({ onAgree }: { onAgree: () => void }) {
   const { lang, t } = useSettings();
   const insets = useSafeAreaInsets();
   const [reading, setReading] = useState<LegalDocId | null>(null);
+
+  // 同意前导航还没挂载，没人处理 Android 返回键：看协议时按返回键，回到同意页，而不是退出 App
+  useEffect(() => {
+    if (!reading) return;
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setReading(null);
+      return true;
+    });
+    return () => sub.remove();
+  }, [reading]);
 
   // 协议全文在同意页内显示：这时还没同意，不能进入 App 的其他页面
   if (reading) {
