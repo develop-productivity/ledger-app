@@ -1,14 +1,17 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Constants from 'expo-constants';
-import { router } from 'expo-router';
-import { useState, type ComponentProps } from 'react';
+import { File, Paths } from 'expo-file-system';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState, type ComponentProps } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { backupFileName, csvFileName, mergeEntries, parseBackup, toBackupJson, toCsv } from '@/core/backup';
+import { formatCrashReport, type CrashLog } from '@/core/crashlog';
 import { LoadGate } from '@/components/LoadGate';
 import { Segmented } from '@/components/Segmented';
 import { CURRENCIES, currencySymbol, type CurrencyCode, type LangPref } from '@/core/settings';
 import { csvLabels } from '@/i18n';
+import { clearCrashLogs, loadCrashLogs } from '@/services/crashlog';
 import { choose, confirm, notify } from '@/services/dialog';
 import { pickTextFile, saveTextFileToFolder, shareTextFile, type ExportOutcome } from '@/services/exporter';
 import { useConsent } from '@/state/ConsentContext';
@@ -23,7 +26,7 @@ export default function MeScreen() {
   return <LoadGate>{(entries) => <Me entries={entries} />}</LoadGate>;
 }
 
-type Busy = 'backup' | 'restore' | 'csv' | null;
+type Busy = 'backup' | 'restore' | 'csv' | 'crashlog' | null;
 
 function Me({ entries }: { entries: Entry[] }) {
   const { mergeIn } = useLedger();
@@ -31,6 +34,18 @@ function Me({ entries }: { entries: Entry[] }) {
   const { withdraw } = useConsent();
   const insets = useSafeAreaInsets();
   const [busy, setBusy] = useState<Busy>(null);
+  const [crashes, setCrashes] = useState<CrashLog[]>([]);
+
+  // 每次切回这一页都重新读：App 运行中崩溃后，不用重启也能看到新记录
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
+      loadCrashLogs().then((logs) => alive && setCrashes(logs));
+      return () => {
+        alive = false;
+      };
+    }, []),
+  );
 
   async function run(kind: Exclude<Busy, null>, task: () => Promise<void>) {
     if (busy) return;
@@ -114,6 +129,56 @@ function Me({ entries }: { entries: Entry[] }) {
     if (ok) await withdraw();
   }
 
+  function diagnosticFile() {
+    // 和备份一样：缓存里不留旧副本；网页预览没有文件系统，只返回文本
+    const name = 'ledger-diagnostics.txt';
+    const text = formatCrashReport(crashes);
+    if (Platform.OS !== 'web') {
+      const file = new File(Paths.cache, name);
+      if (file.exists) file.delete();
+      file.create({ overwrite: true });
+      file.write(text);
+    }
+    return { name, text };
+  }
+
+  function exportDiagnostics() {
+    run('crashlog', async () => {
+      const { name, text } = diagnosticFile();
+      const target =
+        Platform.OS === 'android'
+          ? await choose(
+              t.me.whereExport,
+              '',
+              [
+                { key: 'folder', text: t.me.toFolder },
+                { key: 'share', text: t.me.toShare },
+              ],
+              t.common.cancel,
+            )
+          : 'share';
+      if (target === null) return;
+      const outcome =
+        target === 'folder' ? await saveTextFileToFolder(name, text, 'text/plain') : await shareTextFile(name, text, 'text/plain');
+      afterExport(outcome, name);
+    });
+  }
+
+  async function clearDiagnostics() {
+    const ok = await confirm(t.me.crashLogClearTitle, t.me.crashLogClearBody, {
+      ok: t.me.crashLogClear,
+      cancel: t.common.cancel,
+      destructive: true,
+    });
+    if (!ok) return;
+    try {
+      await clearCrashLogs();
+      setCrashes([]);
+    } catch {
+      notify(t.me.failTitle, t.me.failBody);
+    }
+  }
+
   return (
     <ScrollView contentContainerStyle={[styles.page, { paddingTop: insets.top + 12 }]}>
       <Text style={styles.title}>{t.me.title}</Text>
@@ -151,6 +216,28 @@ function Me({ entries }: { entries: Entry[] }) {
 
       <Text style={styles.section}>{t.me.sectionPrefs}</Text>
       <Prefs />
+
+      <Text style={styles.section}>{t.me.sectionDiagnostics}</Text>
+      <View style={styles.card}>
+        <Row
+          icon={crashes.length ? 'warning-outline' : 'checkmark-circle-outline'}
+          title={t.me.crashLog}
+          desc={t.me.crashLogDesc}
+          value={crashes.length ? t.me.crashLogCount(crashes.length) : t.me.crashLogNone}
+          busy={busy === 'crashlog'}
+          onPress={exportDiagnostics}
+          last={crashes.length === 0}
+        />
+        {crashes.length > 0 ? (
+          <Row
+            icon="trash-outline"
+            title={t.me.crashLogClear}
+            desc={t.me.crashLogClearDesc}
+            onPress={clearDiagnostics}
+            last
+          />
+        ) : null}
+      </View>
 
       <Text style={styles.section}>{t.me.sectionAbout}</Text>
       <View style={styles.card}>

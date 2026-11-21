@@ -37,7 +37,7 @@ src/
   components/   可复用的界面组件：分类图标、月份切换、环形图……
   core/         纯函数业务逻辑，不碰 React、不碰存储，都有单测
   i18n/         界面文字（中文、英文）和日期格式
-  services/     和系统、存储打交道：AsyncStorage、写文件、分享、弹窗
+  services/     和系统、存储打交道：AsyncStorage、写文件、分享、弹窗、崩溃日志
   state/        全局状态（React Context）
   ui/           配色、分类的图标和颜色
 tests/          单元测试，子目录和 src/ 一一对应
@@ -58,6 +58,7 @@ scripts/copyright/  生成软著材料（源程序、用户手册 PDF）的脚�
 | [src/services/storage.ts](src/services/storage.ts) | 用 AsyncStorage 读写数据 |
 | [src/services/exporter.ts](src/services/exporter.ts) | 写文件、分享、选文件夹、选文件 |
 | [src/services/dialog.ts](src/services/dialog.ts) | 弹窗（网页预览里用浏览器弹窗） |
+| [src/core/crashlog.ts](src/core/crashlog.ts)、[src/services/crashlog.ts](src/services/crashlog.ts) | 本机崩溃日志：全局错误钩子、清洗用户输入、「我的」里的导出和清除 |
 | [src/state/LedgerContext.tsx](src/state/LedgerContext.tsx) | 账本数据和当前月份，供各页面共享 |
 | [src/state/SettingsContext.tsx](src/state/SettingsContext.tsx) | 当前语言、翻译文本 `t`、货币 |
 | [src/services/settings.ts](src/services/settings.ts) | 读写语言和货币设置 |

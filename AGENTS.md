@@ -5,7 +5,7 @@
 ## 项目规则
 
 - 开工前读：[README.md](README.md)、[docs/decisions/README.md](docs/decisions/README.md)、相关的 [docs/designs/](docs/designs/)。
-- 提交前跑 `npm run check`（类型检查 + 单元测试），通过后再提交。
+- 提交前跑 `npm run check`（类型检查 + 单元测试 + ESLint），通过后再提交。只有 lint 时用 `npm run lint`。
 - 代码按目录分职责（见 [README.md](README.md) 的"代码结构"）：业务逻辑写成纯函数放 `src/core/`，配单测；和系统、存储打交道的放 `src/services/`；页面 `src/app/` 只管界面。
 - 测试放根目录 `tests/`，子目录和 `src/` 对应（`src/core/ledger.ts` → `tests/core/ledger.test.ts`）。import 用 `@/` 别名（`@/core/ledger`），不写 `../../`。
 - 界面文字不写死在页面里：加到 `src/i18n/zh.ts` 和 `en.ts`，页面用 `useSettings().t`。分类在数据里存中文名，显示时用 `categoryLabel` 翻译。
@@ -15,6 +15,7 @@
 - 发版：改 `app.json` 版本号和 `CHANGELOG.md`，合并后推 `v*` tag，CI 自动打包并建 Release。见 [docs/guides/发布Release.md](docs/guides/发布Release.md)。`v*` tag 不能移动或删除，发错了就发下一个补丁版本。
 - App 不联网、不收集数据，这是隐私政策和商店数据安全表的前提。要加联网或收集数据的功能，先改隐私政策和 `docs/store/README.md`。
 - 隐私政策、用户协议的正文在 `src/i18n/legal.ts`；`PRIVACY.md`、`TERMS.md` 由它生成（`UPDATE_LEGAL=1 npx jest tests/i18n/legal.test.ts`），不手改。新增依赖或权限时，同步更新政策里的组件清单和权限说明；政策有实质变化时把 `src/core/consent.ts` 的 `POLICY_VERSION` 加 1。
+- 崩溃信息只记本机（`src/core/crashlog.ts`、`src/services/crashlog.ts`），不接第三方上报、不加网络权限，见 [决定](docs/decisions/2026-11-21-crash-log-local-only.md)。要改成上报服务，先改这条决定、隐私政策和商店数据安全表。
 - 需要 Mac 才能做的事（iOS 构建、Xcode），写进 `docs/guides/`，让 Mac 上的 session 只读仓库就能接上。
 - 决定、设计、审查、复盘记在 `docs/` 对应目录，文件名 `YYYY-MM-DD-主题.md`，并更新该目录的 `README.md`。
 
