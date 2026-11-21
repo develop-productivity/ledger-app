@@ -1,5 +1,5 @@
 // 隐私政策同意记录。政策有实质变化时把 POLICY_VERSION 加 1，所有用户下次打开要重新同意。
-export const POLICY_VERSION = 1;
+export const POLICY_VERSION = 2;
 
 export interface ConsentRecord {
   version: 1;

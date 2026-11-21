@@ -2,8 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CORRUPT_KEY_PREFIX, STORAGE_KEY, loadEntries, saveEntries } from '@/services/storage';
 import type { Entry } from '@/core/ledger';
 
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+jest.mock(
+  '@react-native-async-storage/async-storage',
+  () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'), // eslint-disable-line @typescript-eslint/no-require-imports -- jest.mock 的工厂函数被提升，不能引用外部变量，只能用 require
 );
 
 const entry: Entry = {

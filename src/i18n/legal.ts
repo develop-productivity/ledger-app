@@ -6,7 +6,7 @@ import type { Lang } from '@/core/settings';
 export const DEVELOPER_ZH = '董士银';
 export const DEVELOPER_EN = 'Dong Shiyin (董士银)';
 export const CONTACT = 'dongshiyin0119@gmail.com';
-export const UPDATED = '2026-11-17';
+export const UPDATED = '2026-11-21';
 
 export type LegalDocId = 'privacy' | 'terms';
 
@@ -68,30 +68,37 @@ const zhPrivacy: LegalDoc = {
       ],
     },
     {
-      heading: '七、备份和导出',
+      heading: '七、崩溃日志',
+      paragraphs: [
+        'App 发生错误时，会在本机自动记一条崩溃日志，包括：发生时间、App 版本、错误类型和堆栈、手机系统版本和型号。日志里的引号内容、数字和中文会被遮掉，不包含你的金额、备注、分类和任何其他记录内容。',
+        '这些日志只保存在本机，App 不会上传。只有你在"我的"→"崩溃诊断"里主动导出，并自己选择发给谁时，日志才会离开这台手机；发不发、发给谁，由你决定。你可以随时在"我的"→"崩溃诊断"里清除全部日志。',
+      ],
+    },
+    {
+      heading: '八、备份和导出',
       paragraphs: [
         '只有你点击"备份到文件"或"导出表格"时，App 才会生成文件，并保存到你选择的文件夹，或交给你在分享面板中选择的 App（如网盘、聊天软件）。文件保存在哪里、发给谁，由你决定，开发者收不到这些文件。',
       ],
     },
     {
-      heading: '八、你的权利',
+      heading: '九、你的权利',
       paragraphs: [
         '查看和修改：你可以在 App 内随时查看、修改、删除每一条记录。',
         '导出：你可以在"我的"页面导出全部记录。',
-        '删除全部数据：卸载 App，或在系统设置中清除 App 数据，会永久删除全部记录。',
+        '删除全部数据：卸载 App，或在系统设置中清除 App 数据，会永久删除全部记录和崩溃日志。',
         '撤回同意：你可以在"我的"→"撤回同意"中撤回对本政策的同意。撤回后需要重新同意才能继续使用，本机记录不会被删除。',
       ],
     },
     {
-      heading: '九、未成年人',
+      heading: '十、未成年人',
       paragraphs: ['本 App 不面向 14 周岁以下的未成年人，也不收集未成年人的个人信息。'],
     },
     {
-      heading: '十、政策更新',
+      heading: '十一、政策更新',
       paragraphs: ['本政策有实质变化时，我们会更新本页面和更新日期，并在你下次打开 App 时重新征求你的同意。'],
     },
     {
-      heading: '十一、联系我们',
+      heading: '十二、联系我们',
       paragraphs: [`开发者：${DEVELOPER_ZH}`, `联系邮箱：${CONTACT}`, '我们会在 15 个工作日内回复。'],
     },
   ],
@@ -189,30 +196,37 @@ const enPrivacy: LegalDoc = {
       ],
     },
     {
-      heading: '7. Backup and export',
+      heading: '7. Crash logs',
+      paragraphs: [
+        'When the app hits an error, it saves a crash log on your phone: when it happened, the app version, the error type and stack trace, and your system version and device model. Quoted text, numbers and Chinese characters are removed before saving, so your amounts, notes, categories and other records are never included.',
+        'These logs stay on your phone and the app never uploads them. They leave your phone only if you go to Me → "Crash reports", export them yourself and choose where to send them. You can clear all of them at any time from the same place.',
+      ],
+    },
+    {
+      heading: '8. Backup and export',
       paragraphs: [
         'A file is created only when you tap "Back up to a file" or "Export spreadsheet (CSV)". It is saved to the folder you choose, or handed to the app you pick in the share sheet. You decide where it goes; the developer never receives it.',
       ],
     },
     {
-      heading: '8. Your rights',
+      heading: '9. Your rights',
       paragraphs: [
         'View and edit: you can view, edit or delete any record in the app at any time.',
         'Export: you can export all records from the Me page.',
-        'Delete everything: uninstalling the app, or clearing its data in system settings, permanently deletes all records.',
+        'Delete everything: uninstalling the app, or clearing its data in system settings, permanently deletes all records and crash logs.',
         'Withdraw consent: go to Me → "Withdraw consent". You will need to agree again to keep using the app; your records are not deleted.',
       ],
     },
     {
-      heading: '9. Children',
+      heading: '10. Children',
       paragraphs: ['The app is not directed at children under 14 and collects no data from them.'],
     },
     {
-      heading: '10. Changes',
+      heading: '11. Changes',
       paragraphs: ['If this policy changes materially, we will update this page and the date above, and ask for your consent again the next time you open the app.'],
     },
     {
-      heading: '11. Contact',
+      heading: '12. Contact',
       paragraphs: [`Developer: ${DEVELOPER_EN}`, `Email: ${CONTACT}`, 'We will reply within 15 working days.'],
     },
   ],
