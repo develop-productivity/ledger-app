@@ -8,7 +8,7 @@
 
 ### 一、适用范围
 
-本政策适用于"记账本"App（英文名 Ledger，包名 com.developproductivity.ledger）。本 App 由个人开发者独立开发和维护（以下简称"开发者"或"我们"）。
+本政策适用于"记账本"App（英文名 Ledger，包名 com.developproductivity.ledger）。本 App 由个人开发者董士银独立开发和维护（以下简称"开发者"或"我们"）。
 
 请你在使用前仔细阅读本政策。你点击"同意并继续"，即表示你已阅读并同意本政策。
 
@@ -76,7 +76,11 @@
 
 ### 十一、联系我们
 
-如对本政策有任何疑问，请通过以下方式联系开发者：https://github.com/develop-productivity/ledger-app/issues
+开发者：董士银
+
+联系邮箱：dongshiyin0119@gmail.com
+
+我们会在 15 个工作日内回复。
 
 ## Privacy Policy
 
@@ -84,7 +88,7 @@ Updated 2026-11-17 · Effective 2026-11-17
 
 ### 1. Scope
 
-This policy applies to the Ledger app ("记账本", package com.developproductivity.ledger), developed and maintained by an independent developer ("we").
+This policy applies to the Ledger app ("记账本", package com.developproductivity.ledger), developed and maintained by the independent developer Dong Shiyin (董士银) ("we").
 
 By tapping "Agree and continue", you confirm that you have read and agree to this policy.
 
@@ -152,4 +156,8 @@ If this policy changes materially, we will update this page and the date above, 
 
 ### 11. Contact
 
-Questions about this policy: https://github.com/develop-productivity/ledger-app/issues
+Developer: Dong Shiyin (董士银)
+
+Email: dongshiyin0119@gmail.com
+
+We will reply within 15 working days.

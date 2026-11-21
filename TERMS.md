@@ -34,7 +34,7 @@
 
 本协议有变化时，我们会更新本页面和更新日期。
 
-如有疑问，请联系开发者：https://github.com/develop-productivity/ledger-app/issues
+如有疑问，请联系开发者董士银：dongshiyin0119@gmail.com
 
 ## Terms of Use
 
@@ -68,4 +68,4 @@ The copyright of the app belongs to the developer.
 
 If these terms change, we will update this page and the date above.
 
-Questions: https://github.com/develop-productivity/ledger-app/issues
+Questions: Dong Shiyin (董士银), dongshiyin0119@gmail.com
