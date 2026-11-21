@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { useState, type ComponentProps } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,13 +11,13 @@ import { CURRENCIES, currencySymbol, type CurrencyCode, type LangPref } from '@/
 import { csvLabels } from '@/i18n';
 import { choose, confirm, notify } from '@/services/dialog';
 import { pickTextFile, saveTextFileToFolder, shareTextFile, type ExportOutcome } from '@/services/exporter';
+import { useConsent } from '@/state/ConsentContext';
 import { useLedger } from '@/state/LedgerContext';
 import { useSettings } from '@/state/SettingsContext';
 import type { Entry } from '@/core/ledger';
 import { colors, radius, shadow } from '@/ui/theme';
 
 const REPO = 'https://github.com/develop-productivity/ledger-app';
-const PRIVACY = `${REPO}/blob/main/PRIVACY.md`;
 
 export default function MeScreen() {
   return <LoadGate>{(entries) => <Me entries={entries} />}</LoadGate>;
@@ -27,6 +28,7 @@ type Busy = 'backup' | 'restore' | 'csv' | null;
 function Me({ entries }: { entries: Entry[] }) {
   const { mergeIn } = useLedger();
   const { lang, t } = useSettings();
+  const { withdraw } = useConsent();
   const insets = useSafeAreaInsets();
   const [busy, setBusy] = useState<Busy>(null);
 
@@ -103,6 +105,15 @@ function Me({ entries }: { entries: Entry[] }) {
     });
   }
 
+  async function confirmWithdraw() {
+    const ok = await confirm(t.me.withdrawTitle, t.me.withdrawBody, {
+      ok: t.me.withdrawOk,
+      cancel: t.common.cancel,
+      destructive: true,
+    });
+    if (ok) await withdraw();
+  }
+
   return (
     <ScrollView contentContainerStyle={[styles.page, { paddingTop: insets.top + 12 }]}>
       <Text style={styles.title}>{t.me.title}</Text>
@@ -144,8 +155,10 @@ function Me({ entries }: { entries: Entry[] }) {
       <Text style={styles.section}>{t.me.sectionAbout}</Text>
       <View style={styles.card}>
         <Row icon="information-circle-outline" title={t.me.version} value={Constants.expoConfig?.version ?? '-'} />
-        <Row icon="document-text-outline" title={t.me.privacy} onPress={() => Linking.openURL(PRIVACY)} />
-        <Row icon="logo-github" title={t.me.source} onPress={() => Linking.openURL(REPO)} last />
+        <Row icon="document-text-outline" title={t.me.privacy} onPress={() => router.push('/legal/privacy')} />
+        <Row icon="reader-outline" title={t.me.terms} onPress={() => router.push('/legal/terms')} />
+        <Row icon="logo-github" title={t.me.source} onPress={() => Linking.openURL(REPO)} />
+        <Row icon="close-circle-outline" title={t.me.withdraw} onPress={confirmWithdraw} last />
       </View>
     </ScrollView>
   );
