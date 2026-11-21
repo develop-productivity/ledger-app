@@ -2,8 +2,10 @@
 // 政策有实质变化时，同时把 src/core/consent.ts 的 POLICY_VERSION 加 1。
 import type { Lang } from '@/core/settings';
 
-// ⚠️ 上架国内商店前必须改成能联系到开发者的邮箱（GitHub 在国内经常打不开）。由用户决定填哪个。
-export const CONTACT = 'https://github.com/develop-productivity/ledger-app/issues';
+// 开发者信息：华为要求写真实姓名，和实名认证、软著著作权人一致（2026-11-21 用户提供）
+export const DEVELOPER_ZH = '董士银';
+export const DEVELOPER_EN = 'Dong Shiyin (董士银)';
+export const CONTACT = 'dongshiyin0119@gmail.com';
 export const UPDATED = '2026-11-17';
 
 export type LegalDocId = 'privacy' | 'terms';
@@ -21,7 +23,7 @@ const zhPrivacy: LegalDoc = {
     {
       heading: '一、适用范围',
       paragraphs: [
-        '本政策适用于"记账本"App（英文名 Ledger，包名 com.developproductivity.ledger）。本 App 由个人开发者独立开发和维护（以下简称"开发者"或"我们"）。',
+        `本政策适用于"记账本"App（英文名 Ledger，包名 com.developproductivity.ledger）。本 App 由个人开发者${DEVELOPER_ZH}独立开发和维护（以下简称"开发者"或"我们"）。`,
         '请你在使用前仔细阅读本政策。你点击"同意并继续"，即表示你已阅读并同意本政策。',
       ],
     },
@@ -90,7 +92,7 @@ const zhPrivacy: LegalDoc = {
     },
     {
       heading: '十一、联系我们',
-      paragraphs: [`如对本政策有任何疑问，请通过以下方式联系开发者：${CONTACT}`],
+      paragraphs: [`开发者：${DEVELOPER_ZH}`, `联系邮箱：${CONTACT}`, '我们会在 15 个工作日内回复。'],
     },
   ],
 };
@@ -129,7 +131,7 @@ const zhTerms: LegalDoc = {
       heading: '六、协议变更和联系方式',
       paragraphs: [
         '本协议有变化时，我们会更新本页面和更新日期。',
-        `如有疑问，请联系开发者：${CONTACT}`,
+        `如有疑问，请联系开发者${DEVELOPER_ZH}：${CONTACT}`,
       ],
     },
   ],
@@ -142,7 +144,7 @@ const enPrivacy: LegalDoc = {
     {
       heading: '1. Scope',
       paragraphs: [
-        'This policy applies to the Ledger app ("记账本", package com.developproductivity.ledger), developed and maintained by an independent developer ("we").',
+        `This policy applies to the Ledger app ("记账本", package com.developproductivity.ledger), developed and maintained by the independent developer ${DEVELOPER_EN} ("we").`,
         'By tapping "Agree and continue", you confirm that you have read and agree to this policy.',
       ],
     },
@@ -211,7 +213,7 @@ const enPrivacy: LegalDoc = {
     },
     {
       heading: '11. Contact',
-      paragraphs: [`Questions about this policy: ${CONTACT}`],
+      paragraphs: [`Developer: ${DEVELOPER_EN}`, `Email: ${CONTACT}`, 'We will reply within 15 working days.'],
     },
   ],
 };
@@ -248,7 +250,7 @@ const enTerms: LegalDoc = {
     },
     {
       heading: '6. Changes and contact',
-      paragraphs: ['If these terms change, we will update this page and the date above.', `Questions: ${CONTACT}`],
+      paragraphs: ['If these terms change, we will update this page and the date above.', `Questions: ${DEVELOPER_EN}, ${CONTACT}`],
     },
   ],
 };
